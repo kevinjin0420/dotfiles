@@ -29,6 +29,12 @@
         register: _klassy_check
         failed_when: _klassy_check.rc != 0
 
+      - name: Check for battery presence
+        shell: ls /sys/class/power_supply/BAT* >/dev/null 2>&1
+        changed_when: false
+        failed_when: false
+        register: _battery_check
+
   tasks:
       - name: Get latest plasma-i3-pager release info
         uri:
@@ -52,16 +58,19 @@
             url: https://api.github.com/repos/kevinjin0420/plasma-charge-limiter/releases/latest
             return_content: true
         register: _chargelimit_release
+        when: _battery_check.rc == 0
 
       - name: Download plasma-charge-limiter plasmoid
         get_url:
             url: "{{ (_chargelimit_release.json.assets | selectattr('name', 'equalto', 'plasma-charge-limiter.plasmoid') | first).browser_download_url }}"
             dest: /tmp/plasma-charge-limiter.plasmoid
             force: true
+        when: _battery_check.rc == 0
 
       - name: Install plasma-charge-limiter plasmoid
         shell: kpackagetool6 --type Plasma/Applet --install /tmp/plasma-charge-limiter.plasmoid 2>/dev/null || kpackagetool6 --type Plasma/Applet --upgrade /tmp/plasma-charge-limiter.plasmoid
         changed_when: false
+        when: _battery_check.rc == 0
 
       - name: Create color-schemes directory
         file:
