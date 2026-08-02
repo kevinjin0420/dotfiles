@@ -1,0 +1,20 @@
+[$Version]
+update_info=kwinrules.upd:replace-placement-string-to-enum,kwinrules.upd:use-virtual-desktop-ids
+
+[1]
+Description=Disable focus stealing prevention for Discord
+fsplevel=0
+fsplevelrule=2
+wmclass=discord
+wmclassmatch=1
+
+[2]
+Description=Disable focus stealing prevention for Slack
+fsplevel=0
+fsplevelrule=2
+wmclass=Slack
+wmclassmatch=1
+
+[General]
+count=2
+rules=1,2

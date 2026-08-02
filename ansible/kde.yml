@@ -94,6 +94,11 @@
             content: "{{ lookup('file', dotfiles_dir + '/kde/plasma-org.kde.plasma.desktop-appletsrc') | replace('/home/kevinjin/', user_home + '/') | replace('__ACTIVITY__', _activity_id.stdout | trim) }}"
             dest: "{{ user_home }}/.config/plasma-org.kde.plasma.desktop-appletsrc"
 
+      - name: Deploy kwin window rules (focus stealing prevention for Discord/Slack tray icons)
+        copy:
+            src: "{{ dotfiles_dir }}/kde/kwinrulesrc"
+            dest: "{{ user_home }}/.config/kwinrulesrc"
+
       - name: Get distributor logo icon name from os-release
         shell: |
             . /etc/os-release
