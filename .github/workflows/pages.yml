@@ -12,6 +12,7 @@ jobs:
       id-token: write
     environment:
       name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
       - run: |
@@ -21,3 +22,4 @@ jobs:
         with:
           path: out
       - uses: actions/deploy-pages@v5
+        id: deployment
