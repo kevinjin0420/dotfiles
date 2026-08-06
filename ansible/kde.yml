@@ -293,6 +293,10 @@
         shell: 'kwriteconfig6 --file kglobalshortcutsrc --group org_kde_powerdevil --key powerProfile "none,none,Switch Power Profile"'
         changed_when: false
 
+      - name: Disable KRunner Alt+Space shortcut
+        shell: 'kwriteconfig6 --file kglobalshortcutsrc --group krunner --key _launch "none,Alt+F2,Search"'
+        changed_when: false
+
       - name: Disable panel task manager shortcuts
         shell: "kwriteconfig6 {{ item }}"
         changed_when: false
