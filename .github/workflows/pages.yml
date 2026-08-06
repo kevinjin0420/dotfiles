@@ -17,8 +17,7 @@ jobs:
       - run: |
           mkdir out
           cp bootstrap.sh out/index.html
-          echo "dotfiles.kevinjin.dev" > out/CNAME
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: out
-      - uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v5
