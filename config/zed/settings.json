@@ -7,6 +7,29 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "auto_install_extensions": {
+    "astro": true,
+    "csv": true,
+    "discord-presence": true,
+    "docker-compose": true,
+    "dockerfile": true,
+    "git-firefly": true,
+    "html": true,
+    "latex": true,
+    "lua": true,
+    "make": true,
+    "material-icon-theme": true,
+    "nix": true,
+    "proto": true,
+    "qml": true,
+    "sql": true,
+    "toml": true,
+    "tsgo": true,
+    "vscode-dark-modern": true,
+    "vue": true,
+    "xml": true,
+    "zig": true
+  },
   "cli_default_open_behavior": "new_window",
   "ui_font_family": "JetBrainsMonoNL Nerd Font Mono",
   "telemetry": {
