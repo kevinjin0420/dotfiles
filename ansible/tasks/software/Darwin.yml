@@ -1,6 +1,6 @@
-- name: Install Chrome, VS Code, Discord, and WeChat
+- name: Install Chrome, VS Code, Zed, Discord, and WeChat
   community.general.homebrew_cask:
-    name: [google-chrome, visual-studio-code, discord, wechat]
+    name: [google-chrome, visual-studio-code, zed, discord, wechat]
     state: present
 
 - name: Install CLI tools

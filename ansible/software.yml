@@ -10,6 +10,20 @@
     - name: Install software
       include_tasks: "tasks/software/{{ ansible_facts['os_family'] }}.yml"
 
+    - name: Check installed Zed version
+      command: zed --version
+      register: _zed_installed
+      changed_when: false
+      failed_when: false
+      when: ansible_facts['os_family'] != "Darwin"
+
+    - name: Install or update Zed via official installer
+      shell: curl -f https://zed.dev/install.sh | sh
+      when:
+        - ansible_facts['os_family'] != "Darwin"
+        - _zed_installed.rc != 0
+      changed_when: true
+
     - name: Check if WeChat is installed
       shell: >
         find /usr/share/applications "{{ user_home }}/.local/share/applications"

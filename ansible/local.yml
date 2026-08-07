@@ -109,6 +109,7 @@
         - "{{ user_home }}/.config/kitty"
         - "{{ user_home }}/.config/tmux"
         - "{{ user_home }}/.config/fastfetch"
+        - "{{ user_home }}/.config/zed"
         - "{{ user_home }}/Documents/wallpapers"
 
     - name: Copy wallpapers (no overwrite)
@@ -256,3 +257,4 @@
         - { src: 'config/tmux/tmux.conf', dest: '.config/tmux/tmux.conf' }
         - { src: 'config/fastfetch/config.jsonc', dest: '.config/fastfetch/config.jsonc' }
         - { src: 'config/fastfetch/kuromi.txt', dest: '.config/fastfetch/kuromi.txt' }
+        - { src: 'config/zed/settings.json', dest: '.config/zed/settings.json' }
