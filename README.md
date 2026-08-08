@@ -75,9 +75,6 @@ installs [optimus-gpu-switcher](https://github.com/enielrodriguez/optimus-gpu-sw
 
 mode switching: `envycontrol -s <integrated|hybrid|nvidia>`
 
-### `auto-cpufreq.yml`
-installs [auto-cpufreq](https://github.com/AdnanHodzic/auto-cpufreq) via its git-clone installer (works on both Fedora and Arch, the installer detects the distro itself) and enables the daemon
-
 ---
 
 ## udev rules
