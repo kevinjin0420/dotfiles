@@ -344,7 +344,7 @@
             DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
 
       - name: Reload kwin (picks up kwinrc, kwinrulesrc, klassy/breeze decoration, input settings)
-        shell: qdbus-qt6 org.kde.KWin /KWin reconfigure
+        shell: qdbus6 org.kde.KWin /KWin reconfigure 2>/dev/null || qdbus-qt6 org.kde.KWin /KWin reconfigure
         changed_when: false
         environment:
             DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"

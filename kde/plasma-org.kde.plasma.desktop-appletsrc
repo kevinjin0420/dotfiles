@@ -110,7 +110,7 @@ global=Meta
 
 [Containments][2][Applets][54]
 immutability=1
-plugin=org.kevinjin.plasma.i3pager
+plugin=org.kde.plasma.desktop-status-bar
 
 [Containments][2][Applets][54][Configuration][ConfigDialog]
 DialogHeight=540
@@ -188,7 +188,7 @@ plugin=org.kde.plasma.folder
 wallpaperplugin=org.kde.image
 
 [Containments][35][Wallpaper][org.kde.image][General]
-Image=file:///usr/share/wallpapers/Next/contents/images/3840x2160.jpg
+Image=/home/kevinjin/dotfiles/wallpapers/bryce_canyon_valley.JPG
 
 [Containments][36]
 activityId=__ACTIVITY__
@@ -200,7 +200,7 @@ plugin=org.kde.plasma.folder
 wallpaperplugin=org.kde.image
 
 [Containments][36][Wallpaper][org.kde.image][General]
-Image=file:///usr/share/wallpapers/Next/contents/images/1920x1080.jpg
+Image=/home/kevinjin/dotfiles/wallpapers/bryce_canyon_valley.JPG
 
 [Containments][38]
 activityId=__ACTIVITY__
@@ -212,7 +212,7 @@ plugin=org.kde.plasma.folder
 wallpaperplugin=org.kde.image
 
 [Containments][38][Wallpaper][org.kde.image][General]
-Image=file:///usr/share/wallpapers/Next/contents/images/3840x2160.jpg
+Image=/home/kevinjin/dotfiles/wallpapers/bryce_canyon_valley.JPG
 
 [Containments][8]
 activityId=
