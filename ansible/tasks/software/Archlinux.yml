@@ -46,7 +46,7 @@
       changed_when: true
 
     - name: Install Chrome, VS Code, Discord, WeChat, and CLI tools via yay
-      shell: yay -S --noconfirm --needed google-chrome texlive-basic texlive-latexextra texlive-fontsrecommended visual-studio-code-bin discord wechat-bin wechat github-cli sl fastfetch btop gti cowsay wl-clipboard aws-cli-bin
+      shell: yay -S --noconfirm --needed google-chrome texlive-basic texlive-latexextra texlive-fontsrecommended visual-studio-code-bin discord wechat-bin github-cli sl fastfetch btop gti cowsay wl-clipboard aws-cli-bin
       environment:
         SUDO_ASKPASS: "{{ _yay_askpass.path }}"
       changed_when: false
