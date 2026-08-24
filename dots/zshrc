@@ -74,7 +74,7 @@ fi
 export PATH="/home/kevinjin/.pixi/bin:$PATH"
 
 # BEGIN MROVER
-[[ -f "${MROVER_REPO:-$HOME/mrover-ros2}/scripts/mrover.zshrc" ]] && source "${MROVER_REPO:-$HOME/mrover-ros2}/scripts/mrover.zshrc"
+[[ -f "${MROVER_REPO:-$HOME/mrover-ros2}/scripts/mrover-portable.zshenv" ]] && source "${MROVER_REPO:-$HOME/mrover-ros2}/scripts/mrover-portable.zshenv"
 # END MROVER
 
 if [[ -d "${MROVER_REPO:-$HOME/mrover-ros2}/" ]]; then
