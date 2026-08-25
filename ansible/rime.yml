@@ -144,7 +144,7 @@
         src: "{{ dotfiles_dir }}/{{ item.src }}"
         dest: "{{ user_home }}/{{ item.dest }}"
         mode: "0644"
-        force: false
+        force: true
       loop:
         - { src: "config/fcitx5/config",                        dest: ".config/fcitx5/config" }
         - { src: "config/fcitx5/profile",                       dest: ".config/fcitx5/profile" }
