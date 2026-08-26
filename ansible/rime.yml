@@ -175,6 +175,14 @@
         - ansible_facts['os_family'] != "Darwin"
         - lookup('env', 'XDG_CURRENT_DESKTOP') == 'KDE'
 
+    # steal KDE ctrl+space for layout switcher
+    - name: Free Ctrl+Space from KDE's keyboard layout switcher shortcut
+      command: kwriteconfig6 --file kglobalshortcutsrc --group "KDE Keyboard Layout Switcher" --key "Switch to Next Keyboard Layout" "none,Meta+Alt+K,Switch to Next Keyboard Layout"
+      changed_when: false
+      when:
+        - ansible_facts['os_family'] != "Darwin"
+        - lookup('env', 'XDG_CURRENT_DESKTOP') == 'KDE'
+
     # for non-KDE/non-systemd X11 sessions
     - name: Write fcitx5 environment variables for X11 sessions
       copy:
