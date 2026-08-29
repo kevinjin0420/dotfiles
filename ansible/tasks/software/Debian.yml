@@ -53,22 +53,3 @@
   become: true
   when: _discord_check.rc != 0
 
-- name: Check if WeChat is installed
-  command: dpkg -s wechat
-  register: _wechat_check
-  changed_when: false
-  failed_when: false
-
-- name: Download WeChat
-  ansible.builtin.get_url:
-    url: "https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_x86_64.deb"
-    dest: /tmp/wechat.deb
-    mode: '0644'
-  when: _wechat_check.rc != 0
-
-- name: Install WeChat
-  ansible.builtin.apt:
-    name: /tmp/wechat.deb
-    state: present
-  become: true
-  when: _wechat_check.rc != 0

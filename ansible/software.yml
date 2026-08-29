@@ -24,39 +24,61 @@
         - _zed_installed.rc != 0
       changed_when: true
 
-    - name: Check if WeChat is installed
-      shell: >
-        find /usr/share/applications "{{ user_home }}/.local/share/applications"
-        \( -name '*wechat*' -o -name '*weixin*' \) -print -quit 2>/dev/null
-      register: wechat_desktop
-      changed_when: false
-      failed_when: false
+    - name: Ensure flatpak is installed
+      package:
+        name: flatpak
+        state: present
+      become: true
       when: ansible_facts['os_family'] != "Darwin"
 
-    - name: Read installed WeChat icon path
-      shell: "grep -m1 '^Icon=' '{{ wechat_desktop.stdout }}' | cut -d= -f2-"
-      register: wechat_icon
-      changed_when: false
-      failed_when: false
-      when:
-        - ansible_facts['os_family'] != "Darwin"
-        - wechat_desktop.stdout != ""
+    - name: Add Flathub remote
+      community.general.flatpak_remote:
+        name: flathub
+        state: present
+        flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+      become: true
+      when: ansible_facts['os_family'] != "Darwin"
 
-    - name: Ensure ~/.local/share/applications exists
-      file:
-        path: "{{ user_home }}/.local/share/applications"
-        state: directory
-        mode: "0755"
-      when:
-        - ansible_facts['os_family'] != "Darwin"
-        - wechat_desktop.stdout != ""
+    - name: Install WeChat via Flatpak
+      community.general.flatpak:
+        name: com.tencent.WeChat
+        state: present
+      when: ansible_facts['os_family'] != "Darwin"
 
-    - name: Deploy WeChat desktop override for fcitx5 XWayland IM
-      template:
-        src: "{{ dotfiles_dir }}/local/share/applications/wechat.desktop.j2"
-        dest: "{{ user_home }}/.local/share/applications/wechat.desktop"
-        mode: "0644"
-      when:
-        - ansible_facts['os_family'] != "Darwin"
-        - wechat_desktop.stdout != ""
+    # Disabled: WeChat is Flatpak now, doesn't need this.
+    # - name: Check if WeChat is installed
+    #   shell: >
+    #     find /usr/share/applications "{{ user_home }}/.local/share/applications"
+    #     \( -name '*wechat*' -o -name '*weixin*' \) -print -quit 2>/dev/null
+    #   register: wechat_desktop
+    #   changed_when: false
+    #   failed_when: false
+    #   when: ansible_facts['os_family'] != "Darwin"
+
+    # - name: Read installed WeChat icon path
+    #   shell: "grep -m1 '^Icon=' '{{ wechat_desktop.stdout }}' | cut -d= -f2-"
+    #   register: wechat_icon
+    #   changed_when: false
+    #   failed_when: false
+    #   when:
+    #     - ansible_facts['os_family'] != "Darwin"
+    #     - wechat_desktop.stdout != ""
+
+    # - name: Ensure ~/.local/share/applications exists
+    #   file:
+    #     path: "{{ user_home }}/.local/share/applications"
+    #     state: directory
+    #     mode: "0755"
+    #   when:
+    #     - ansible_facts['os_family'] != "Darwin"
+    #     - wechat_desktop.stdout != ""
+
+    # - name: Deploy WeChat desktop override for fcitx5 XWayland IM
+    #   template:
+    #     src: "{{ dotfiles_dir }}/local/share/applications/wechat.desktop.j2"
+    #     dest: "{{ user_home }}/.local/share/applications/wechat.desktop"
+    #     mode: "0644"
+    #   when:
+    #     - ansible_facts['os_family'] != "Darwin"
+    #     - wechat_desktop.stdout != ""
 
