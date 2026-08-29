@@ -1,0 +1,2 @@
+# Bridge75 keyboard - hidraw access for VIA / Vial / QMK (WebHID)
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="fffe", ATTRS{idProduct}=="003e", MODE="0660", GROUP="wheel", TAG+="uaccess"

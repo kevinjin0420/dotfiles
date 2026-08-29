@@ -237,7 +237,7 @@
       when: ansible_facts['os_family'] != "Darwin"
 
     - name: Reload udev rules
-      command: udevadm control --reload-rules
+      command: udevadm control --reload-rules && udevadm trigger
       become: true
       changed_when: false
       when: ansible_facts['os_family'] != "Darwin"

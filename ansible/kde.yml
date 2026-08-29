@@ -4,380 +4,402 @@
   gather_facts: true
 
   vars:
-      dotfiles_dir: "{{ playbook_dir | dirname }}"
-      user_home: "{{ ansible_env.HOME }}"
-      kitty_bin: "{{ ansible_env.HOME }}/.local/kitty.app/bin/kitty"
+    dotfiles_dir: "{{ playbook_dir | dirname }}"
+    user_home: "{{ ansible_env.HOME }}"
+    kitty_bin: "{{ ansible_env.HOME }}/.local/kitty.app/bin/kitty"
 
   pre_tasks:
-      - name: Fail if running as root
-        fail:
-            msg: "Do not run as root"
-        when: ansible_facts['user_id'] == "root"
+    - name: Fail if running as root
+      fail:
+        msg: "Do not run as root"
+      when: ansible_facts['user_id'] == "root"
 
-      - name: Check kwriteconfig6 is available
-        command: which kwriteconfig6
-        changed_when: false
-        failed_when: false
-        register: _kwriteconfig6
-      - fail:
-            msg: "kwriteconfig6 not found -- is KDE Plasma installed?"
-        when: _kwriteconfig6.rc != 0
+    - name: Check kwriteconfig6 is available
+      command: which kwriteconfig6
+      changed_when: false
+      failed_when: false
+      register: _kwriteconfig6
+    - fail:
+        msg: "kwriteconfig6 not found -- is KDE Plasma installed?"
+      when: _kwriteconfig6.rc != 0
 
-      - name: Check klassy decoration plugin is installed
-        shell: find /usr /usr/local -name '*klassy*' -name '*.so' 2>/dev/null | grep -q .
-        changed_when: false
-        register: _klassy_check
-        failed_when: _klassy_check.rc != 0
+    - name: Check klassy decoration plugin is installed
+      shell: find /usr /usr/local -name '*klassy*' -name '*.so' 2>/dev/null | grep -q .
+      changed_when: false
+      register: _klassy_check
+      failed_when: _klassy_check.rc != 0
 
-      - name: Check for battery presence
-        shell: ls /sys/class/power_supply/BAT* >/dev/null 2>&1
-        changed_when: false
-        failed_when: false
-        register: _battery_check
+    - name: Check for battery presence
+      shell: ls /sys/class/power_supply/BAT* >/dev/null 2>&1
+      changed_when: false
+      failed_when: false
+      register: _battery_check
 
   tasks:
-      - name: Get latest plasma-i3-pager release info
-        uri:
-            url: https://api.github.com/repos/kevinjin0420/plasma-i3-pager/releases/latest
-            return_content: true
-        register: _i3pager_release
+    - name: Get latest plasma-i3-pager release info
+      uri:
+        url: https://api.github.com/repos/kevinjin0420/plasma-i3-pager/releases/latest
+        return_content: true
+      register: _i3pager_release
 
-      - name: Download plasma-i3-pager plasmoid
-        get_url:
-            url: "{{ (_i3pager_release.json.assets | selectattr('name', 'equalto', 'plasma-i3-pager.plasmoid') | first).browser_download_url }}"
-            dest: /tmp/plasma-i3-pager.plasmoid
-            force: true
+    - name: Download plasma-i3-pager plasmoid
+      get_url:
+        url: "{{ (_i3pager_release.json.assets | selectattr('name', 'equalto', 'plasma-i3-pager.plasmoid') | first).browser_download_url }}"
+        dest: /tmp/plasma-i3-pager.plasmoid
+        force: true
 
-      - name: Install plasma-i3-pager plasmoid
-        shell: kpackagetool6 --type Plasma/Applet --install /tmp/plasma-i3-pager.plasmoid 2>/dev/null || kpackagetool6 --type Plasma/Applet --upgrade /tmp/plasma-i3-pager.plasmoid
-        changed_when: false
+    - name: Install plasma-i3-pager plasmoid
+      shell: kpackagetool6 --type Plasma/Applet --install /tmp/plasma-i3-pager.plasmoid 2>/dev/null || kpackagetool6 --type Plasma/Applet --upgrade /tmp/plasma-i3-pager.plasmoid
+      changed_when: false
 
-      # toggles upower's ChargeThresholdEnabled; no such toggle exists in stock KDE UI
-      - name: Get latest plasma-charge-limiter release info
-        uri:
-            url: https://api.github.com/repos/kevinjin0420/plasma-charge-limiter/releases/latest
-            return_content: true
-        register: _chargelimit_release
-        when: _battery_check.rc == 0
+    # toggles upower's ChargeThresholdEnabled; no such toggle exists in stock KDE UI
+    - name: Get latest plasma-charge-limiter release info
+      uri:
+        url: https://api.github.com/repos/kevinjin0420/plasma-charge-limiter/releases/latest
+        return_content: true
+      register: _chargelimit_release
+      when: _battery_check.rc == 0
 
-      - name: Download plasma-charge-limiter plasmoid
-        get_url:
-            url: "{{ (_chargelimit_release.json.assets | selectattr('name', 'equalto', 'plasma-charge-limiter.plasmoid') | first).browser_download_url }}"
-            dest: /tmp/plasma-charge-limiter.plasmoid
-            force: true
-        when: _battery_check.rc == 0
+    - name: Download plasma-charge-limiter plasmoid
+      get_url:
+        url: "{{ (_chargelimit_release.json.assets | selectattr('name', 'equalto', 'plasma-charge-limiter.plasmoid') | first).browser_download_url }}"
+        dest: /tmp/plasma-charge-limiter.plasmoid
+        force: true
+      when: _battery_check.rc == 0
 
-      - name: Install plasma-charge-limiter plasmoid
-        shell: kpackagetool6 --type Plasma/Applet --install /tmp/plasma-charge-limiter.plasmoid 2>/dev/null || kpackagetool6 --type Plasma/Applet --upgrade /tmp/plasma-charge-limiter.plasmoid
-        changed_when: false
-        when: _battery_check.rc == 0
+    - name: Install plasma-charge-limiter plasmoid
+      shell: kpackagetool6 --type Plasma/Applet --install /tmp/plasma-charge-limiter.plasmoid 2>/dev/null || kpackagetool6 --type Plasma/Applet --upgrade /tmp/plasma-charge-limiter.plasmoid
+      changed_when: false
+      when: _battery_check.rc == 0
 
-      - name: Create color-scheme and klassy desktop-theme override directories
-        file:
-            path: "{{ item }}"
-            state: directory
-        loop:
-            - "{{ user_home }}/.local/share/color-schemes"
-            - "{{ user_home }}/.local/share/plasma/desktoptheme/klassy"
+    - name: Check whether the Compact Plus switcher is a development checkout
+      stat:
+        path: "{{ user_home }}/.local/share/kwin/tabbox/compactplus"
+      register: _compactplus_installed
 
-      # Minimal = stock Breeze Dark with a monochrome (light-gray) accent instead of blue.
-      # The klassy Plasma theme ships its own hardcoded colors/plasmarc, so the same
-      # palette is dropped in as a per-file override there to make the panel/shell match,
-      # and its plasmarc override disables the frosted-blur / adaptive-transparency effects.
-      - name: Deploy Minimal color scheme (apps + klassy shell override)
-        copy:
-            src: "{{ dotfiles_dir }}/kde/color-schemes/Minimal.colors"
-            dest: "{{ item }}"
-        loop:
-            - "{{ user_home }}/.local/share/color-schemes/Minimal.colors"
-            - "{{ user_home }}/.local/share/plasma/desktoptheme/klassy/colors"
+    - name: Get latest kwin-compact-plus release info
+      uri:
+        url: https://api.github.com/repos/kevinjin0420/kwin-compact-plus/releases/latest
+        return_content: true
+      register: _compactplus_release
+      when: not _compactplus_installed.stat.islnk | default(false)
 
-      - name: Override klassy desktop-theme plasmarc (disable blur / adaptive transparency)
-        copy:
-            src: "{{ dotfiles_dir }}/kde/desktoptheme-klassy/plasmarc"
-            dest: "{{ user_home }}/.local/share/plasma/desktoptheme/klassy/plasmarc"
+    - name: Download kwin-compact-plus switcher
+      get_url:
+        url: "{{ (_compactplus_release.json.assets | selectattr('name', 'equalto', 'kwin-compact-plus.tar.gz') | first).browser_download_url }}"
+        dest: /tmp/kwin-compact-plus.tar.gz
+        force: true
+      when: not _compactplus_installed.stat.islnk | default(false)
 
-      - name: Activate Minimal color scheme
-        shell: plasma-apply-colorscheme Minimal
-        changed_when: false
-        environment:
-            DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
+    # a symlinked package dir is a local checkout; kpackagetool6 --upgrade would
+    # replace the link with a copy and silently detach it from the working tree
+    - name: Install kwin-compact-plus switcher
+      shell: kpackagetool6 --type KWin/WindowSwitcher --install /tmp/kwin-compact-plus.tar.gz 2>/dev/null || kpackagetool6 --type KWin/WindowSwitcher --upgrade /tmp/kwin-compact-plus.tar.gz
+      changed_when: false
+      when: not _compactplus_installed.stat.islnk | default(false)
 
-      - name: Get current activity ID
-        shell: |
-            grep -oP '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}' \
-              ~/.config/kactivitymanagerdrc | head -1
-        register: _activity_id
-        changed_when: false
+    - name: Create color-scheme and klassy desktop-theme override directories
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - "{{ user_home }}/.local/share/color-schemes"
+        - "{{ user_home }}/.local/share/plasma/desktoptheme/klassy"
 
-      - name: Deploy plasma applets config
-        copy:
-            content: "{{ lookup('file', dotfiles_dir + '/kde/plasma-org.kde.plasma.desktop-appletsrc') | replace('/home/kevinjin/', user_home + '/') | replace('__ACTIVITY__', _activity_id.stdout | trim) }}"
-            dest: "{{ user_home }}/.config/plasma-org.kde.plasma.desktop-appletsrc"
+    - name: Deploy Minimal color scheme (apps + klassy shell override)
+      copy:
+        src: "{{ dotfiles_dir }}/kde/color-schemes/Minimal.colors"
+        dest: "{{ item }}"
+      loop:
+        - "{{ user_home }}/.local/share/color-schemes/Minimal.colors"
+        - "{{ user_home }}/.local/share/plasma/desktoptheme/klassy/colors"
 
-      - name: Deploy kwin window rules (focus stealing prevention for Discord/Slack tray icons)
-        copy:
-            src: "{{ dotfiles_dir }}/kde/kwinrulesrc"
-            dest: "{{ user_home }}/.config/kwinrulesrc"
+    - name: Override klassy desktop-theme plasmarc (disable blur / adaptive transparency)
+      copy:
+        src: "{{ dotfiles_dir }}/kde/desktoptheme-klassy/plasmarc"
+        dest: "{{ user_home }}/.local/share/plasma/desktoptheme/klassy/plasmarc"
 
-      - name: Get distributor logo icon name from os-release
-        shell: |
-            . /etc/os-release
-            echo "${LOGO:-distributor-logo}"
-        register: _logo_icon_name
-        changed_when: false
+    - name: Activate Minimal color scheme
+      shell: plasma-apply-colorscheme Minimal
+      changed_when: false
+      environment:
+        DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
 
-      - name: Resolve distributor logo file path
-        shell: |
-            icon="{{ _logo_icon_name.stdout | trim }}"
-            for size in scalable 256x256 128x128 96x96 48x48; do
-              for ext in svg png; do
-                f="/usr/share/icons/hicolor/${size}/apps/${icon}.${ext}"
-                [ -f "$f" ] && echo "$f" && exit 0
-              done
-            done
-            for ext in svg png; do
-              f="/usr/share/icons/${icon}.${ext}"
-              [ -f "$f" ] && echo "$f" && exit 0
-            done
-            find /usr/share/pixmaps -name "${icon}.*" 2>/dev/null | head -1
-        register: _logo_path
-        changed_when: false
+    - name: Get current activity ID
+      shell: |
+        grep -oP '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}' \
+          ~/.config/kactivitymanagerdrc | head -1
+      register: _activity_id
+      changed_when: false
 
-      - name: Set Kicker custom button image to distro logo
-        shell: >
-            kwriteconfig6
-            --file plasma-org.kde.plasma.desktop-appletsrc
-            --group Containments --group 2 --group Applets --group 50 --group Configuration --group General
-            --key customButtonImage "{{ _logo_path.stdout | trim }}"
-        when: _logo_path.stdout | trim != ""
-        changed_when: false
+    - name: Deploy plasma applets config
+      copy:
+        content: "{{ lookup('file', dotfiles_dir + '/kde/plasma-org.kde.plasma.desktop-appletsrc') | replace('/home/kevinjin/', user_home + '/') | replace('__ACTIVITY__', _activity_id.stdout | trim) }}"
+        dest: "{{ user_home }}/.config/plasma-org.kde.plasma.desktop-appletsrc"
 
-      - name: Apply kwin settings
-        shell: "kwriteconfig6 {{ item }}"
-        changed_when: false
-        loop:
-            - "--file kwinrc --group Desktops --key Number 5"
-            - "--file kwinrc --group Desktops --key Rows 1"
-            - "--file kwinrc --group Windows --key RollOverDesktops false"
-            - "--file kwinrc --group Windows --key DelayFocusInterval 0"
-            - "--file kwinrc --group Tiling --key padding 4"
-            - "--file kwinrc --group org.kde.kdecoration2 --key library org.kde.klassy"
-            - "--file kwinrc --group org.kde.kdecoration2 --key theme Klassy"
-            - "--file kwinrc --group org.kde.kdecoration2 --key BorderSize None"
-            - "--file kwinrc --group org.kde.kdecoration2 --key BorderSizeAuto false"
-            - "--file kwinrc --group TabBox --key ActivitiesMode 0"
-            - "--file kwinrc --group TabBox --key HighlightWindows false"
-            - "--file kwinrc --group TabBox --key LayoutName compact"
-            - "--file kwinrc --group Plugins --key shakecursorEnabled false"
-            - "--file kwinrc --group Plugins --key slideEnabled false"
-            - "--file kwinrc --group Plugins --key zoomEnabled false"
-            - "--file kwinrc --group Script-desktopchangeosd --key TextOnly true"
-            - "--file kwinrc --group Wayland --key EnablePrimarySelection false"
-            - "--file kwinrc --group Effect-showdesktop --key BorderActivate 9"
+    - name: Deploy kwin window rules (focus stealing prevention for Discord/Slack tray icons)
+      copy:
+        src: "{{ dotfiles_dir }}/kde/kwinrulesrc"
+        dest: "{{ user_home }}/.config/kwinrulesrc"
 
-      - name: Apply kdeglobals settings
-        shell: "kwriteconfig6 {{ item }}"
-        changed_when: false
-        loop:
-            - "--file kdeglobals --group KDE --key LookAndFeelPackage org.kde.breezedark.desktop"
-            - '--file kdeglobals --group General --key TerminalApplication "{{ kitty_bin }}"'
+    - name: Get distributor logo icon name from os-release
+      shell: |
+        . /etc/os-release
+        echo "${LOGO:-distributor-logo}"
+      register: _logo_icon_name
+      changed_when: false
 
-      - name: Apply klassy settings
-        shell: "kwriteconfig6 {{ item }}"
-        changed_when: false
-        loop:
-            - "--file klassy/klassyrc --group ButtonColors --key ButtonBackgroundOpacityActive 100"
-            - "--file klassy/klassyrc --group ButtonColors --key ButtonBackgroundOpacityInactive 100"
-            - "--file klassy/klassyrc --group ButtonColors --key CloseButtonIconColorActive AsSelected"
-            - "--file klassy/klassyrc --group ButtonColors --key CloseButtonIconColorInactive AsSelected"
-            - "--file klassy/klassyrc --group Global --key LookAndFeelSet org.kde.breezedark.desktop"
-            - "--file klassy/klassyrc --group ShadowStyle --key ShadowStrength 128"
-            - "--file klassy/klassyrc --group Windeco --key AnimationsEnabled false"
-            - "--file klassy/klassyrc --group Windeco --key BoldTitle false"
-            - "--file klassy/klassyrc --group Windeco --key ButtonIconStyle StyleTraditional"
-            - "--file klassy/klassyrc --group Windeco --key ButtonShape ShapeFullHeightRectangle"
-            - "--file klassy/klassyrc --group Windeco --key ColorizeThinWindowOutlineWithButton false"
-            - "--file klassy/klassyrc --group Windeco --key ColorizeWindowOutlineWithButton false"
-            - "--file klassy/klassyrc --group Windeco --key CornerRadius 0"
-            - "--file klassy/klassyrc --group Windeco --key DrawTitleBarSeparator false"
-            - "--file klassy/klassyrc --group Windeco --key UseTitleBarColorForAllBorders false"
-            - "--file klassy/klassyrc --group Windeco --key WindowCornerRadius 0"
-            - "--file klassy/klassyrc --group WindowOutlineStyle --key ThinWindowOutlineStyleActive WindowOutlineNone"
-            - "--file klassy/klassyrc --group WindowOutlineStyle --key ThinWindowOutlineStyleInactive WindowOutlineNone"
+    - name: Resolve distributor logo file path
+      shell: |
+        icon="{{ _logo_icon_name.stdout | trim }}"
+        for size in scalable 256x256 128x128 96x96 48x48; do
+          for ext in svg png; do
+            f="/usr/share/icons/hicolor/${size}/apps/${icon}.${ext}"
+            [ -f "$f" ] && echo "$f" && exit 0
+          done
+        done
+        for ext in svg png; do
+          f="/usr/share/icons/${icon}.${ext}"
+          [ -f "$f" ] && echo "$f" && exit 0
+        done
+        find /usr/share/pixmaps -name "${icon}.*" 2>/dev/null | head -1
+      register: _logo_path
+      changed_when: false
 
-      - name: Apply plasma settings
-        shell: "kwriteconfig6 {{ item }}"
-        changed_when: false
-        loop:
-            - "--file plasmarc --group Theme --key name klassy"
-            - '--file plasmashellrc --group PlasmaViews --group "Panel 2" --key floating 0'
-            - '--file plasmashellrc --group PlasmaViews --group "Panel 2" --key panelOpacity 1'
-            - '--file plasmashellrc --group PlasmaViews --group "Panel 2" --group Defaults --key thickness 44'
+    - name: Set Kicker custom button image to distro logo
+      shell: >
+        kwriteconfig6
+        --file plasma-org.kde.plasma.desktop-appletsrc
+        --group Containments --group 2 --group Applets --group 50 --group Configuration --group General
+        --key customButtonImage "{{ _logo_path.stdout | trim }}"
+      when: _logo_path.stdout | trim != ""
+      changed_when: false
 
-      - name: Apply notification settings
-        shell: "kwriteconfig6 {{ item }}"
-        changed_when: false
-        loop:
-            - "--file plasmanotifyrc --group Notifications --key PopupPosition TopRight"
+    - name: Apply kwin settings
+      shell: "kwriteconfig6 {{ item }}"
+      changed_when: false
+      loop:
+        - "--file kwinrc --group Desktops --key Number 5"
+        - "--file kwinrc --group Desktops --key Rows 1"
+        - "--file kwinrc --group Windows --key RollOverDesktops false"
+        - "--file kwinrc --group Windows --key DelayFocusInterval 0"
+        - "--file kwinrc --group Tiling --key padding 4"
+        - "--file kwinrc --group org.kde.kdecoration2 --key library org.kde.klassy"
+        - "--file kwinrc --group org.kde.kdecoration2 --key theme Klassy"
+        - "--file kwinrc --group org.kde.kdecoration2 --key BorderSize None"
+        - "--file kwinrc --group org.kde.kdecoration2 --key BorderSizeAuto false"
+        - "--file kwinrc --group TabBox --key ActivitiesMode 0"
+        - "--file kwinrc --group TabBox --key HighlightWindows false"
+        - "--file kwinrc --group TabBox --key LayoutName compactplus"
+        - "--file kwinrc --group Plugins --key shakecursorEnabled false"
+        - "--file kwinrc --group Plugins --key slideEnabled false"
+        - "--file kwinrc --group Plugins --key zoomEnabled false"
+        - "--file kwinrc --group Script-desktopchangeosd --key TextOnly true"
+        - "--file kwinrc --group Wayland --key EnablePrimarySelection false"
+        - "--file kwinrc --group Effect-showdesktop --key BorderActivate 9"
 
-      - name: Apply input settings
-        shell: "kwriteconfig6 {{ item }}"
-        changed_when: false
-        loop:
-            - "--file kcminputrc --group Keyboard --key RepeatDelay 200"
-            - "--file kcminputrc --group Keyboard --key RepeatRate 40"
+    - name: Apply kdeglobals settings
+      shell: "kwriteconfig6 {{ item }}"
+      changed_when: false
+      loop:
+        - "--file kdeglobals --group KDE --key LookAndFeelPackage org.kde.breezedark.desktop"
+        - '--file kdeglobals --group General --key TerminalApplication "{{ kitty_bin }}"'
 
-      - name: Enable natural scrolling for all libinput devices
-        shell: |
-            python3 << 'EOF'
-            import subprocess, re, os
-            cfg = os.path.expanduser("~/.config/kcminputrc")
-            try:
-                text = open(cfg).read()
-            except FileNotFoundError:
-                exit(0)
-            for match in re.finditer(r'^\[Libinput\](\[[^\]]+\])+', text, re.MULTILINE):
-                groups = re.findall(r'\[([^\]]+)\]', match.group(0))
-                device_name = groups[-1].lower()
-                if 'touchpad' not in device_name and 'trackpad' not in device_name:
-                    continue
-                cmd = ['kwriteconfig6', '--file', 'kcminputrc']
-                for g in groups:
-                    cmd += ['--group', g]
-                cmd += ['--key', 'NaturalScroll', 'true']
-                subprocess.run(cmd, check=True)
-            EOF
-        changed_when: false
+    - name: Apply klassy settings
+      shell: "kwriteconfig6 {{ item }}"
+      changed_when: false
+      loop:
+        - "--file klassy/klassyrc --group ButtonColors --key ButtonBackgroundOpacityActive 100"
+        - "--file klassy/klassyrc --group ButtonColors --key ButtonBackgroundOpacityInactive 100"
+        - "--file klassy/klassyrc --group ButtonColors --key CloseButtonIconColorActive AsSelected"
+        - "--file klassy/klassyrc --group ButtonColors --key CloseButtonIconColorInactive AsSelected"
+        - "--file klassy/klassyrc --group Global --key LookAndFeelSet org.kde.breezedark.desktop"
+        - "--file klassy/klassyrc --group ShadowStyle --key ShadowStrength 128"
+        - "--file klassy/klassyrc --group Windeco --key AnimationsEnabled false"
+        - "--file klassy/klassyrc --group Windeco --key BoldTitle false"
+        - "--file klassy/klassyrc --group Windeco --key ButtonIconStyle StyleTraditional"
+        - "--file klassy/klassyrc --group Windeco --key ButtonShape ShapeFullHeightRectangle"
+        - "--file klassy/klassyrc --group Windeco --key ColorizeThinWindowOutlineWithButton false"
+        - "--file klassy/klassyrc --group Windeco --key ColorizeWindowOutlineWithButton false"
+        - "--file klassy/klassyrc --group Windeco --key CornerRadius 0"
+        - "--file klassy/klassyrc --group Windeco --key DrawTitleBarSeparator false"
+        - "--file klassy/klassyrc --group Windeco --key UseTitleBarColorForAllBorders false"
+        - "--file klassy/klassyrc --group Windeco --key WindowCornerRadius 0"
+        - "--file klassy/klassyrc --group WindowOutlineStyle --key ThinWindowOutlineStyleActive WindowOutlineNone"
+        - "--file klassy/klassyrc --group WindowOutlineStyle --key ThinWindowOutlineStyleInactive WindowOutlineNone"
 
-      - name: Apply power settings
-        shell: "kwriteconfig6 {{ item }}"
-        changed_when: false
-        loop:
-            - "--file powerdevilrc --group AC --group Display --key DimDisplayWhenIdle false"
-            - "--file powerdevilrc --group AC --group Display --key TurnOffDisplayWhenIdle false"
-            - "--file powerdevilrc --group AC --group Performance --key PowerProfile performance"
-            - "--file powerdevilrc --group AC --group SuspendAndShutdown --key AutoSuspendAction 0"
-            - "--file powerdevilrc --group Battery --group Display --key DimDisplayWhenIdle false"
-            - "--file powerdevilrc --group Battery --group Performance --key PowerProfile balanced"
-            - "--file powerdevilrc --group Battery --group SuspendAndShutdown --key AutoSuspendIdleTimeoutSec 900"
-            - "--file powerdevilrc --group BatteryManagement --key BatteryCriticalAction 1"
-            - "--file powerdevilrc --group LowBattery --group Performance --key PowerProfile power-saver"
+    - name: Apply plasma settings
+      shell: "kwriteconfig6 {{ item }}"
+      changed_when: false
+      loop:
+        - "--file plasmarc --group Theme --key name klassy"
+        - '--file plasmashellrc --group PlasmaViews --group "Panel 2" --key floating 0'
+        - '--file plasmashellrc --group PlasmaViews --group "Panel 2" --key panelOpacity 1'
+        - '--file plasmashellrc --group PlasmaViews --group "Panel 2" --group Defaults --key thickness 44'
 
-      - name: Apply lockscreen settings
-        shell: "kwriteconfig6 {{ item }}"
-        changed_when: false
-        loop:
-            - "--file kscreenlockerrc --group Daemon --key Timeout 30"
-            - '--file kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General --key Image "{{ dotfiles_dir }}/wallpapers/firewatch.png"'
+    - name: Apply notification settings
+      shell: "kwriteconfig6 {{ item }}"
+      changed_when: false
+      loop:
+        - "--file plasmanotifyrc --group Notifications --key PopupPosition TopRight"
 
-      - name: Apply breeze settings
-        shell: "kwriteconfig6 {{ item }}"
-        changed_when: false
-        loop:
-            - "--file breezerc --group Common --key OutlineIntensity OutlineOff"
-            - "--file breezerc --group Common --key ShadowStrength 128"
+    - name: Apply input settings
+      shell: "kwriteconfig6 {{ item }}"
+      changed_when: false
+      loop:
+        - "--file kcminputrc --group Keyboard --key RepeatDelay 200"
+        - "--file kcminputrc --group Keyboard --key RepeatRate 40"
 
-      - name: Apply keyboard shortcuts
-        shell: "kwriteconfig6 {{ item }}"
-        changed_when: false
-        loop:
-            - '--file kglobalshortcutsrc --group kwin --key "Window Maximize" "Meta+Up,Meta+PgUp,Maximize Window"'
-            - '--file kglobalshortcutsrc --group kwin --key "Window Quick Tile Left" "Meta+Left,Meta+Left,Quick Tile Window to the Left"'
-            - '--file kglobalshortcutsrc --group kwin --key "Window Quick Tile Right" "Meta+Right,Meta+Right,Quick Tile Window to the Right"'
-            - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 1" "Alt+1,Ctrl+F1,Switch to Desktop 1"'
-            - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 2" "Alt+2,Ctrl+F2,Switch to Desktop 2"'
-            - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 3" "Alt+3,Ctrl+F3,Switch to Desktop 3"'
-            - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 4" "Alt+4,Ctrl+F4,Switch to Desktop 4"'
-            - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 5" "Alt+5,,Switch to Desktop 5"'
-            - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 6" "Alt+6,,Switch to Desktop 6"'
-            - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 7" "Alt+7,,Switch to Desktop 7"'
-            - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 8" "Alt+8,,Switch to Desktop 8"'
-            - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 9" "Alt+9,,Switch to Desktop 9"'
-            - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 10" "Alt+0,,Switch to Desktop 10"'
-            - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 1" "Alt+!,,Window to Desktop 1"'
-            - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 2" "Alt+@,,Window to Desktop 2"'
-            - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 3" "Alt+#,,Window to Desktop 3"'
-            - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 4" "Alt+$,,Window to Desktop 4"'
-            - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 5" "Alt+%,,Window to Desktop 5"'
-            - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 6" "Alt+^,,Window to Desktop 6"'
-            - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 7" "Alt+&,,Window to Desktop 7"'
-            - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 8" "Alt+*,,Window to Desktop 8"'
-            - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 9" "Alt+(,,Window to Desktop 9"'
-            - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 10" "Alt+),,Window to Desktop 10"'
-            - '--file kglobalshortcutsrc --group kwin --key "view_zoom_in" "none,Meta++\tMeta+=,Zoom In"'
-            - '--file kglobalshortcutsrc --group kwin --key "view_zoom_out" "none,Meta+-,Zoom Out"'
-            - '--file kglobalshortcutsrc --group kwin --key "view_actual_size" "none,Meta+0,Zoom to Actual Size"'
-            - '--file kglobalshortcutsrc --group kwin --key "Overview" "none,none,Toggle Overview"'
+    - name: Enable natural scrolling for all libinput devices
+      shell: |
+        python3 << 'EOF'
+        import subprocess, re, os
+        cfg = os.path.expanduser("~/.config/kcminputrc")
+        try:
+            text = open(cfg).read()
+        except FileNotFoundError:
+            exit(0)
+        for match in re.finditer(r'^\[Libinput\](\[[^\]]+\])+', text, re.MULTILINE):
+            groups = re.findall(r'\[([^\]]+)\]', match.group(0))
+            device_name = groups[-1].lower()
+            if 'touchpad' not in device_name and 'trackpad' not in device_name:
+                continue
+            cmd = ['kwriteconfig6', '--file', 'kcminputrc']
+            for g in groups:
+                cmd += ['--group', g]
+            cmd += ['--key', 'NaturalScroll', 'true']
+            subprocess.run(cmd, check=True)
+        EOF
+      changed_when: false
 
-      - name: Disable performance mode switch shortcut
-        shell: 'kwriteconfig6 --file kglobalshortcutsrc --group org_kde_powerdevil --key powerProfile "none,none,Switch Power Profile"'
-        changed_when: false
+    - name: Apply power settings
+      shell: "kwriteconfig6 {{ item }}"
+      changed_when: false
+      loop:
+        - "--file powerdevilrc --group AC --group Display --key DimDisplayWhenIdle false"
+        - "--file powerdevilrc --group AC --group Display --key TurnOffDisplayWhenIdle false"
+        - "--file powerdevilrc --group AC --group Performance --key PowerProfile performance"
+        - "--file powerdevilrc --group AC --group SuspendAndShutdown --key AutoSuspendAction 0"
+        - "--file powerdevilrc --group Battery --group Display --key DimDisplayWhenIdle false"
+        - "--file powerdevilrc --group Battery --group Performance --key PowerProfile balanced"
+        - "--file powerdevilrc --group Battery --group SuspendAndShutdown --key AutoSuspendIdleTimeoutSec 900"
+        - "--file powerdevilrc --group BatteryManagement --key BatteryCriticalAction 1"
+        - "--file powerdevilrc --group LowBattery --group Performance --key PowerProfile power-saver"
 
-      - name: Disable KRunner Alt+Space shortcut
-        shell: 'kwriteconfig6 --file kglobalshortcutsrc --group krunner --key _launch "none,Alt+F2,Search"'
-        changed_when: false
+    - name: Apply lockscreen settings
+      shell: "kwriteconfig6 {{ item }}"
+      changed_when: false
+      loop:
+        - "--file kscreenlockerrc --group Daemon --key Timeout 30"
+        - '--file kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General --key Image "{{ dotfiles_dir }}/wallpapers/firewatch.png"'
 
-      - name: Disable panel task manager shortcuts
-        shell: "kwriteconfig6 {{ item }}"
-        changed_when: false
-        loop:
-            - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 1" "none,none,Activate Task Manager Entry 1"'
-            - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 2" "none,none,Activate Task Manager Entry 2"'
-            - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 3" "none,none,Activate Task Manager Entry 3"'
-            - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 4" "none,none,Activate Task Manager Entry 4"'
-            - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 5" "none,none,Activate Task Manager Entry 5"'
-            - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 6" "none,none,Activate Task Manager Entry 6"'
-            - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 7" "none,none,Activate Task Manager Entry 7"'
-            - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 8" "none,none,Activate Task Manager Entry 8"'
-            - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 9" "none,none,Activate Task Manager Entry 9"'
-            - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 10" "none,none,Activate Task Manager Entry 10"'
+    - name: Apply breeze settings
+      shell: "kwriteconfig6 {{ item }}"
+      changed_when: false
+      loop:
+        - "--file breezerc --group Common --key OutlineIntensity OutlineOff"
+        - "--file breezerc --group Common --key ShadowStrength 128"
 
-      - name: Remove stale Title Case task manager shortcut keys
-        shell: 'kwriteconfig6 --file kglobalshortcutsrc --group plasmashell --key "{{ item }}" --delete'
-        changed_when: false
-        loop:
-            - Activate Task Manager Entry 1
-            - Activate Task Manager Entry 2
-            - Activate Task Manager Entry 3
-            - Activate Task Manager Entry 4
-            - Activate Task Manager Entry 5
-            - Activate Task Manager Entry 6
-            - Activate Task Manager Entry 7
-            - Activate Task Manager Entry 8
-            - Activate Task Manager Entry 9
-            - Activate Task Manager Entry 10
+    - name: Apply keyboard shortcuts
+      shell: "kwriteconfig6 {{ item }}"
+      changed_when: false
+      loop:
+        - '--file kglobalshortcutsrc --group kwin --key "Window Maximize" "Meta+Up,Meta+PgUp,Maximize Window"'
+        - '--file kglobalshortcutsrc --group kwin --key "Window Quick Tile Left" "Meta+Left,Meta+Left,Quick Tile Window to the Left"'
+        - '--file kglobalshortcutsrc --group kwin --key "Window Quick Tile Right" "Meta+Right,Meta+Right,Quick Tile Window to the Right"'
+        - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 1" "Alt+1,Ctrl+F1,Switch to Desktop 1"'
+        - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 2" "Alt+2,Ctrl+F2,Switch to Desktop 2"'
+        - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 3" "Alt+3,Ctrl+F3,Switch to Desktop 3"'
+        - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 4" "Alt+4,Ctrl+F4,Switch to Desktop 4"'
+        - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 5" "Alt+5,,Switch to Desktop 5"'
+        - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 6" "Alt+6,,Switch to Desktop 6"'
+        - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 7" "Alt+7,,Switch to Desktop 7"'
+        - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 8" "Alt+8,,Switch to Desktop 8"'
+        - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 9" "Alt+9,,Switch to Desktop 9"'
+        - '--file kglobalshortcutsrc --group kwin --key "Switch to Desktop 10" "Alt+0,,Switch to Desktop 10"'
+        - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 1" "Alt+!,,Window to Desktop 1"'
+        - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 2" "Alt+@,,Window to Desktop 2"'
+        - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 3" "Alt+#,,Window to Desktop 3"'
+        - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 4" "Alt+$,,Window to Desktop 4"'
+        - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 5" "Alt+%,,Window to Desktop 5"'
+        - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 6" "Alt+^,,Window to Desktop 6"'
+        - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 7" "Alt+&,,Window to Desktop 7"'
+        - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 8" "Alt+*,,Window to Desktop 8"'
+        - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 9" "Alt+(,,Window to Desktop 9"'
+        - '--file kglobalshortcutsrc --group kwin --key "Window to Desktop 10" "Alt+),,Window to Desktop 10"'
+        - '--file kglobalshortcutsrc --group kwin --key "view_zoom_in" "none,Meta++\tMeta+=,Zoom In"'
+        - '--file kglobalshortcutsrc --group kwin --key "view_zoom_out" "none,Meta+-,Zoom Out"'
+        - '--file kglobalshortcutsrc --group kwin --key "view_actual_size" "none,Meta+0,Zoom to Actual Size"'
+        - '--file kglobalshortcutsrc --group kwin --key "Overview" "none,none,Toggle Overview"'
 
-      - name: Set account avatar
-        copy:
-            src: "{{ dotfiles_dir }}/wallpapers/vertigo.jpg"
-            dest: "{{ item }}"
-            mode: "0644"
-        loop:
-            - "{{ user_home }}/.face"
-            - "{{ user_home }}/.face.icon"
+    - name: Disable performance mode switch shortcut
+      shell: 'kwriteconfig6 --file kglobalshortcutsrc --group org_kde_powerdevil --key powerProfile "none,none,Switch Power Profile"'
+      changed_when: false
 
-      - name: Set desktop wallpaper
-        shell: plasma-apply-wallpaperimage "{{ dotfiles_dir }}/wallpapers/bryce_canyon_valley.JPG"
-        changed_when: false
-        environment:
-            DISPLAY: ":0"
-            DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
+    - name: Disable KRunner Alt+Space shortcut
+      shell: 'kwriteconfig6 --file kglobalshortcutsrc --group krunner --key _launch "none,Alt+F2,Search"'
+      changed_when: false
 
-      - name: Reload kwin (picks up kwinrc, kwinrulesrc, klassy/breeze decoration, input settings)
-        shell: qdbus6 org.kde.KWin /KWin reconfigure 2>/dev/null || qdbus-qt6 org.kde.KWin /KWin reconfigure
-        changed_when: false
-        environment:
-            DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
+    - name: Disable panel task manager shortcuts
+      shell: "kwriteconfig6 {{ item }}"
+      changed_when: false
+      loop:
+        - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 1" "none,none,Activate Task Manager Entry 1"'
+        - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 2" "none,none,Activate Task Manager Entry 2"'
+        - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 3" "none,none,Activate Task Manager Entry 3"'
+        - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 4" "none,none,Activate Task Manager Entry 4"'
+        - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 5" "none,none,Activate Task Manager Entry 5"'
+        - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 6" "none,none,Activate Task Manager Entry 6"'
+        - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 7" "none,none,Activate Task Manager Entry 7"'
+        - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 8" "none,none,Activate Task Manager Entry 8"'
+        - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 9" "none,none,Activate Task Manager Entry 9"'
+        - '--file kglobalshortcutsrc --group plasmashell --key "activate task manager entry 10" "none,none,Activate Task Manager Entry 10"'
 
-      - name: Restart plasmashell (picks up applets, panel, plasma theme, notifications)
-        shell: systemctl --user restart plasma-plasmashell.service
-        changed_when: false
+    - name: Remove stale Title Case task manager shortcut keys
+      shell: 'kwriteconfig6 --file kglobalshortcutsrc --group plasmashell --key "{{ item }}" --delete'
+      changed_when: false
+      loop:
+        - Activate Task Manager Entry 1
+        - Activate Task Manager Entry 2
+        - Activate Task Manager Entry 3
+        - Activate Task Manager Entry 4
+        - Activate Task Manager Entry 5
+        - Activate Task Manager Entry 6
+        - Activate Task Manager Entry 7
+        - Activate Task Manager Entry 8
+        - Activate Task Manager Entry 9
+        - Activate Task Manager Entry 10
 
-      - name: Restart powerdevil (picks up power profile settings)
-        shell: systemctl --user restart plasma-powerdevil.service
-        changed_when: false
+    - name: Set account avatar
+      copy:
+        src: "{{ dotfiles_dir }}/wallpapers/vertigo.jpg"
+        dest: "{{ item }}"
+        mode: "0644"
+      loop:
+        - "{{ user_home }}/.face"
+        - "{{ user_home }}/.face.icon"
 
-      - name: Restart kglobalaccel (picks up keyboard shortcuts)
-        shell: systemctl --user restart plasma-kglobalaccel.service
-        changed_when: false
+    - name: Set desktop wallpaper
+      shell: plasma-apply-wallpaperimage "{{ dotfiles_dir }}/wallpapers/bryce_canyon_valley.JPG"
+      changed_when: false
+      environment:
+        DISPLAY: ":0"
+        DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
+
+    - name: Reload kwin (picks up kwinrc, kwinrulesrc, klassy/breeze decoration, input settings)
+      shell: qdbus6 org.kde.KWin /KWin reconfigure 2>/dev/null || qdbus-qt6 org.kde.KWin /KWin reconfigure
+      changed_when: false
+      environment:
+        DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
+
+    - name: Restart plasmashell (picks up applets, panel, plasma theme, notifications)
+      shell: systemctl --user restart plasma-plasmashell.service
+      changed_when: false
+
+    - name: Restart powerdevil (picks up power profile settings)
+      shell: systemctl --user restart plasma-powerdevil.service
+      changed_when: false
+
+    - name: Restart kglobalaccel (picks up keyboard shortcuts)
+      shell: systemctl --user restart plasma-kglobalaccel.service
+      changed_when: false

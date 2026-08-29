@@ -3,3 +3,9 @@
 -- Add any additional options here
 
 vim.opt.conceallevel = 0
+
+-- 4-space indentation by default
+vim.opt.shiftwidth = 4
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.expandtab = true
