@@ -72,15 +72,36 @@
         changed_when: false
         when: _battery_check.rc == 0
 
-      - name: Create color-schemes directory
+      - name: Create color-scheme and klassy desktop-theme override directories
         file:
-            path: "{{ user_home }}/.local/share/color-schemes"
+            path: "{{ item }}"
             state: directory
+        loop:
+            - "{{ user_home }}/.local/share/color-schemes"
+            - "{{ user_home }}/.local/share/plasma/desktoptheme/klassy"
 
-      - name: Copy AritimDark color scheme
+      # Minimal = stock Breeze Dark with a monochrome (light-gray) accent instead of blue.
+      # The klassy Plasma theme ships its own hardcoded colors/plasmarc, so the same
+      # palette is dropped in as a per-file override there to make the panel/shell match,
+      # and its plasmarc override disables the frosted-blur / adaptive-transparency effects.
+      - name: Deploy Minimal color scheme (apps + klassy shell override)
         copy:
-            src: "{{ dotfiles_dir }}/kde/color-schemes/AritimDark.colors"
-            dest: "{{ user_home }}/.local/share/color-schemes/AritimDark.colors"
+            src: "{{ dotfiles_dir }}/kde/color-schemes/Minimal.colors"
+            dest: "{{ item }}"
+        loop:
+            - "{{ user_home }}/.local/share/color-schemes/Minimal.colors"
+            - "{{ user_home }}/.local/share/plasma/desktoptheme/klassy/colors"
+
+      - name: Override klassy desktop-theme plasmarc (disable blur / adaptive transparency)
+        copy:
+            src: "{{ dotfiles_dir }}/kde/desktoptheme-klassy/plasmarc"
+            dest: "{{ user_home }}/.local/share/plasma/desktoptheme/klassy/plasmarc"
+
+      - name: Activate Minimal color scheme
+        shell: plasma-apply-colorscheme Minimal
+        changed_when: false
+        environment:
+            DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
 
       - name: Get current activity ID
         shell: |
