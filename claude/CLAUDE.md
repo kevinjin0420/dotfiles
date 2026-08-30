@@ -54,8 +54,29 @@
 * Minimal Interfaces: Keep interfaces small (prefer single-method interfaces) and defined at the point of use (consumer side), not alongside the implementation.
 * gofmt/goimports-Clean: Code must always be formatted with gofmt/goimports.
 
-## 10. PR & Doc Writing Style
+## 10. Frontend / UI Standards
+* Pointer Cursor on Interactive Elements: Every clickable element (`button`, `[role="button"]`, clickable labels, custom controls) must show `cursor: pointer` when enabled. Tailwind v4 and modern browser defaults render buttons with `cursor: default`, so add a single global stylesheet rule (`button:not(:disabled) { cursor: pointer }` plus role/label variants) rather than annotating each element.
+* Disabled State Is Visible: A disabled control must look disabled (reduced opacity or muted color) and must not show a pointer cursor.
+* Flat Neutral Style: When asked for "the flat style", "the job-alerts style", or a "squared / neutral look", follow the flat neutral style guide imported below: hard corners, neutral grayscale surfaces, borders instead of shadows, color only as state signal.
+
+## 11. PR & Doc Writing Style
 * Nest, Don't Cram: One fact per bullet. If a summary line covers multiple sub-facts (an API list, multiple root causes, multiple steps), break them into nested sub-bullets instead of one sentence stuffed with parentheticals.
 * Links as Sub-Bullets: Pull external references (issue trackers, upstream fix commits) out of inline parentheses into their own sub-bullet with a markdown link, e.g. `- fixed [here](url)`, rather than `(fixed upstream, see url)`.
 * State the Real Reason: Give the actual underlying constraint driving a decision (e.g. "upstream doesn't publish arm64 binaries, maintaining a fork costs CI budget") instead of a vague summary phrase (e.g. "since it's not needed there").
 * No Narrative in Summary Bullets: Testing notes and process narration belong in the test plan section, not folded into a summary bullet as prose.
+
+## 12. CI / GitHub Actions
+* Always Add Dependabot: Any repository with GitHub Actions workflows must include a `.github/dependabot.yml` enabling the `github-actions` ecosystem so action versions stay updated.
+
+## 13. Commit Messages
+* One Line, No Body: A commit message is a single line. If a change needs a paragraph to explain, that belongs in the code, a comment, or the PR description, not the commit.
+* Imperative Mood, Lowercase: Start with an imperative verb in lowercase: "add manifest backfill", "fix video download progress", "restore pointer cursor on interactive elements".
+* Describe the Outcome, Not the Diff: Say what the change accomplishes ("shorten device menu labels"), never which files moved ("edit DeviceMenu.tsx").
+* Optional `summary: specifics` Form: When one line needs a qualifier, use a colon: "fix yt-dlp impersonation: use curl-cffi extra not default".
+* No Type Prefixes: Do not use Conventional Commits tags (`feat:`, `fix:`, `chore:`) unless the repository already uses them consistently.
+* No Attribution: No `Co-Authored-By`, no tool or assistant signatures, no trailers.
+* One Logical Change Per Commit: Group related edits and their tests into a single coherent commit; do not bundle unrelated changes.
+
+---
+
+@flat-neutral-style.md

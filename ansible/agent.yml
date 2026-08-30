@@ -11,12 +11,14 @@
         state: directory
         mode: '0755'
 
-    - name: Symlink CLAUDE.md
+    - name: Symlink claude config files
       file:
-        src: "{{ dotfiles_dir }}/claude/CLAUDE.md"
-        dest: "{{ user_home }}/.claude/CLAUDE.md"
+        src: "{{ item }}"
+        dest: "{{ user_home }}/.claude/{{ item | basename }}"
         state: link
         force: yes
+      with_fileglob:
+        - "{{ dotfiles_dir }}/claude/*"
 
     - name: Ensure ~/.cursor/rules exists
       file:
