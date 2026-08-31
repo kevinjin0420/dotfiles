@@ -23,11 +23,22 @@
         msg: "kwriteconfig6 not found -- is KDE Plasma installed?"
       when: _kwriteconfig6.rc != 0
 
-    - name: Check klassy decoration plugin is installed
+    - name: Check whether the klassy decoration plugin is installed
       shell: find /usr /usr/local -name '*klassy*' -name '*.so' 2>/dev/null | grep -q .
       changed_when: false
+      failed_when: false
       register: _klassy_check
-      failed_when: _klassy_check.rc != 0
+
+    - name: Install the klassy decoration ({{ ansible_facts['distribution'] }})
+      include_tasks: "tasks/kde/{{ ansible_facts['os_family'] }}.yml"
+      when: _klassy_check.rc != 0
+
+    - name: Re-check klassy decoration plugin is installed
+      shell: find /usr /usr/local -name '*klassy*' -name '*.so' 2>/dev/null | grep -q .
+      changed_when: false
+      register: _klassy_recheck
+      failed_when: _klassy_recheck.rc != 0
+      when: _klassy_check.rc != 0
 
     - name: Check for battery presence
       shell: ls /sys/class/power_supply/BAT* >/dev/null 2>&1
@@ -104,7 +115,16 @@
         state: directory
       loop:
         - "{{ user_home }}/.local/share/color-schemes"
-        - "{{ user_home }}/.local/share/plasma/desktoptheme/klassy"
+        - "{{ user_home }}/.local/share/plasma/desktoptheme/klassy-dark"
+
+    # A same-named user theme dir shadows the system one file-by-file, but only if
+    # it carries a metadata.json -- without it Plasma logs "Could not locate
+    # metadata for theme" and falls back to Breeze. SVGs still come from /usr.
+    - name: Seed klassy-dark override dir with the system theme's metadata.json
+      copy:
+        src: /usr/share/plasma/desktoptheme/klassy-dark/metadata.json
+        dest: "{{ user_home }}/.local/share/plasma/desktoptheme/klassy-dark/metadata.json"
+        remote_src: true
 
     - name: Deploy Minimal color scheme (apps + klassy shell override)
       copy:
@@ -112,12 +132,12 @@
         dest: "{{ item }}"
       loop:
         - "{{ user_home }}/.local/share/color-schemes/Minimal.colors"
-        - "{{ user_home }}/.local/share/plasma/desktoptheme/klassy/colors"
+        - "{{ user_home }}/.local/share/plasma/desktoptheme/klassy-dark/colors"
 
     - name: Override klassy desktop-theme plasmarc (disable blur / adaptive transparency)
       copy:
         src: "{{ dotfiles_dir }}/kde/desktoptheme-klassy/plasmarc"
-        dest: "{{ user_home }}/.local/share/plasma/desktoptheme/klassy/plasmarc"
+        dest: "{{ user_home }}/.local/share/plasma/desktoptheme/klassy-dark/plasmarc"
 
     - name: Activate Minimal color scheme
       shell: plasma-apply-colorscheme Minimal
@@ -131,11 +151,6 @@
           ~/.config/kactivitymanagerdrc | head -1
       register: _activity_id
       changed_when: false
-
-    - name: Deploy plasma applets config
-      copy:
-        content: "{{ lookup('file', dotfiles_dir + '/kde/plasma-org.kde.plasma.desktop-appletsrc') | replace('/home/kevinjin/', user_home + '/') | replace('__ACTIVITY__', _activity_id.stdout | trim) }}"
-        dest: "{{ user_home }}/.config/plasma-org.kde.plasma.desktop-appletsrc"
 
     - name: Deploy kwin window rules (focus stealing prevention for Discord/Slack tray icons)
       copy:
@@ -164,15 +179,6 @@
         done
         find /usr/share/pixmaps -name "${icon}.*" 2>/dev/null | head -1
       register: _logo_path
-      changed_when: false
-
-    - name: Set Kicker custom button image to distro logo
-      shell: >
-        kwriteconfig6
-        --file plasma-org.kde.plasma.desktop-appletsrc
-        --group Containments --group 2 --group Applets --group 50 --group Configuration --group General
-        --key customButtonImage "{{ _logo_path.stdout | trim }}"
-      when: _logo_path.stdout | trim != ""
       changed_when: false
 
     - name: Apply kwin settings
@@ -232,7 +238,7 @@
       shell: "kwriteconfig6 {{ item }}"
       changed_when: false
       loop:
-        - "--file plasmarc --group Theme --key name klassy"
+        - "--file plasmarc --group Theme --key name klassy-dark"
         - '--file plasmashellrc --group PlasmaViews --group "Panel 2" --key floating 0'
         - '--file plasmashellrc --group PlasmaViews --group "Panel 2" --key panelOpacity 1'
         - '--file plasmashellrc --group PlasmaViews --group "Panel 2" --group Defaults --key thickness 44'
@@ -392,8 +398,26 @@
       environment:
         DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
 
-    - name: Restart plasmashell (picks up applets, panel, plasma theme, notifications)
-      shell: systemctl --user restart plasma-plasmashell.service
+    - name: Stop plasmashell before deploying the panel layout
+      shell: systemctl --user stop plasma-plasmashell.service
+      changed_when: false
+
+    - name: Deploy plasma applets config
+      copy:
+        content: "{{ lookup('file', dotfiles_dir + '/kde/plasma-org.kde.plasma.desktop-appletsrc') | replace('/home/kevinjin/', user_home + '/') | replace('__ACTIVITY__', _activity_id.stdout | trim) }}"
+        dest: "{{ user_home }}/.config/plasma-org.kde.plasma.desktop-appletsrc"
+
+    - name: Set Kicker custom button image to distro logo
+      shell: >
+        kwriteconfig6
+        --file plasma-org.kde.plasma.desktop-appletsrc
+        --group Containments --group 2 --group Applets --group 50 --group Configuration --group General
+        --key customButtonImage "{{ _logo_path.stdout | trim }}"
+      when: _logo_path.stdout | trim != ""
+      changed_when: false
+
+    - name: Start plasmashell (picks up applets, panel, plasma theme, notifications)
+      shell: systemctl --user start plasma-plasmashell.service
       changed_when: false
 
     - name: Restart powerdevil (picks up power profile settings)

@@ -1,0 +1,47 @@
+# klassy KWin decoration -- no Debian/Ubuntu package exists; it must be built
+# from source. Upstream build instructions:
+#   https://github.com/paulmcauley/klassy/blob/master/INSTALL.md
+#
+# Scaffold for an automated source build (untested across Debian/Ubuntu
+# releases -- Qt6/KF6 dev package names drift between versions, so verify
+# against your distro before enabling):
+#
+# - name: Install klassy build dependencies
+#   ansible.builtin.apt:
+#     name:
+#       - build-essential
+#       - cmake
+#       - extra-cmake-modules
+#       - gettext
+#       - qt6-base-dev
+#       - libkf6config-dev
+#       - libkf6coreaddons-dev
+#       - libkf6guiaddons-dev
+#       - libkf6i18n-dev
+#       - libkf6iconthemes-dev
+#       - libkf6kcmutils-dev
+#       - libkf6windowsystem-dev
+#       - libkdecorations2-dev
+#       - libkf6crash-dev
+#     state: present
+#     update_cache: true
+#   become: true
+#
+# - name: Clone klassy
+#   ansible.builtin.git:
+#     repo: https://github.com/paulmcauley/klassy.git
+#     dest: /tmp/klassy
+#     depth: 1
+#
+# - name: Build and install klassy
+#   ansible.builtin.command:
+#     cmd: bash install.sh
+#     chdir: /tmp/klassy
+#   become: true
+
+- name: klassy must be installed manually on Debian/Ubuntu
+  fail:
+    msg: >-
+      klassy has no Debian/Ubuntu package. Build it from source following
+      https://github.com/paulmcauley/klassy/blob/master/INSTALL.md (or fill in
+      the scaffold in tasks/kde/Debian.yml), then re-run this playbook.
