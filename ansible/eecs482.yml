@@ -1,0 +1,26 @@
+- hosts: localhost
+  connection: local
+  vars:
+    dotfiles_dir: "{{ playbook_dir | dirname }}"
+    user_home: "{{ lookup('env', 'HOME') }}"
+    version482_src: "{{ dotfiles_dir }}/eecs482/version482.vim"
+
+  tasks:
+    - name: Ensure Vim and Neovim plugin directories exist
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "{{ user_home }}/.vim/plugin"
+        - "{{ user_home }}/.local/share/nvim/site/plugin"
+
+    - name: Symlink version482.vim into Vim and Neovim
+      file:
+        src: "{{ version482_src }}"
+        dest: "{{ item }}/version482.vim"
+        state: link
+        force: yes
+      loop:
+        - "{{ user_home }}/.vim/plugin"
+        - "{{ user_home }}/.local/share/nvim/site/plugin"

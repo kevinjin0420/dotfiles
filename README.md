@@ -69,6 +69,11 @@ simplified chinese input method on kde
 ### `agent.yml`
 tries to make claude and cursor more usable
 
+### `eecs482.yml`
+class setup, opt-in. Symlinks `eecs482/version482.vim` (course staff editor
+plugin that auto-snapshots work to `*.version482` repos) into `~/.vim/plugin/`
+and `~/.local/share/nvim/site/plugin/`. See `eecs482/README.md`.
+
 ### `envycontrol.yml`
 installs [envycontrol](https://github.com/bayasdev/envycontrol) for Nvidia Optimus GPU switching, Fedora only for now
 installs [optimus-gpu-switcher](https://github.com/enielrodriguez/optimus-gpu-switcher) plasma widget if KDE
