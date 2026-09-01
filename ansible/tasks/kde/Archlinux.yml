@@ -1,0 +1,16 @@
+# klassy KWin decoration -- in the AUR: https://aur.archlinux.org/packages/klassy
+# Assumes yay is already bootstrapped (see tasks/software/Archlinux.yml).
+- name: Check if yay is installed
+  command: which yay
+  register: _yay_check
+  changed_when: false
+  failed_when: false
+
+- name: Fail if yay is missing
+  fail:
+    msg: "yay not found -- run the software playbook first to bootstrap it"
+  when: _yay_check.rc != 0
+
+- name: Install klassy from the AUR
+  command: yay -S --noconfirm --needed klassy
+  changed_when: true

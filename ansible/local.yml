@@ -237,9 +237,12 @@
       when: ansible_facts['os_family'] != "Darwin"
 
     - name: Reload udev rules
-      command: udevadm control --reload-rules && udevadm trigger
+      command: "{{ item }}"
       become: true
       changed_when: false
+      loop:
+        - udevadm control --reload-rules
+        - udevadm trigger
       when: ansible_facts['os_family'] != "Darwin"
 
     - name: Create symlinks for dotfiles

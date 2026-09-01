@@ -1,0 +1,13 @@
+# klassy KWin decoration -- packaged in the errornointernet/klassy COPR:
+#   https://copr.fedorainfracloud.org/coprs/errornointernet/klassy/
+- name: Enable errornointernet/klassy COPR
+  community.general.copr:
+    name: errornointernet/klassy
+    state: enabled
+  become: true
+
+- name: Install klassy
+  ansible.builtin.dnf:
+    name: klassy
+    state: present
+  become: true
