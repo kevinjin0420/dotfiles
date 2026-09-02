@@ -1,0 +1,5 @@
+# EECS 473 Lab 1:
+# Arduino Uno (2341/2a03)
+# FTDI USB-UART (0403)
+ACTION=="add|change", SUBSYSTEM=="usb", ATTR{idVendor}=="2341|2a03|0403", ENV{ID_MM_DEVICE_IGNORE}="1"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="2341|2a03|0403|1a86", GROUP="dialout", MODE="0660", TAG+="uaccess"

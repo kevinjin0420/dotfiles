@@ -225,25 +225,6 @@
       with_fileglob:
         - "{{ dotfiles_dir }}/fonts/*.ttf"
       when: ansible_facts['os_family'] == "Darwin"
-    - name: Install udev rules for embedded dev boards
-      file:
-        src: "{{ item }}"
-        dest: "/etc/udev/rules.d/{{ item | basename }}"
-        state: link
-        force: yes
-      with_fileglob:
-        - "{{ dotfiles_dir }}/udev/rules.d/*.rules"
-      become: true
-      when: ansible_facts['os_family'] != "Darwin"
-
-    - name: Reload udev rules
-      command: "{{ item }}"
-      become: true
-      changed_when: false
-      loop:
-        - udevadm control --reload-rules
-        - udevadm trigger
-      when: ansible_facts['os_family'] != "Darwin"
 
     - name: Create symlinks for dotfiles
       file:
@@ -261,3 +242,9 @@
         - { src: 'config/fastfetch/config.jsonc', dest: '.config/fastfetch/config.jsonc' }
         - { src: 'config/fastfetch/kuromi.txt', dest: '.config/fastfetch/kuromi.txt' }
         - { src: 'config/zed/settings.json', dest: '.config/zed/settings.json' }
+
+    - name: Deploy udev rules for embedded dev boards
+      command: "{{ dotfiles_dir }}/scripts/deploy_udev.sh"
+      become: true
+      changed_when: false
+      when: ansible_facts['os_family'] != "Darwin"
