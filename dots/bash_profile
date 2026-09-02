@@ -1,0 +1,11 @@
+# Redirect into zsh on hosts where chsh is unavailable (e.g. CAEN LDAP accounts).
+case "$-" in
+  *i*)
+    if [ -z "$ZSH_VERSION" ] && command -v zsh >/dev/null 2>&1; then
+      export SHELL="$(command -v zsh)"
+      exec "$SHELL" -l
+    fi
+    ;;
+esac
+
+[ -f "$HOME/.profile" ] && . "$HOME/.profile"

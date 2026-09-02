@@ -1,8 +1,9 @@
 # dotfiles
 
 This is my personal dotfiles repository, supporting:
+
 - macOS
-- Arch, 
+- Arch
 - Debian/Ubuntu
 - Fedora
 
@@ -11,11 +12,13 @@ basically the operating systems I use
 ## Bootstrap
 
 for a freshly installed OS:
+
 - install Ansible, git
 - clone this repo
 - run `./ansible.sh local.yml` to start
 
 OR, bootstrap script:
+
 ```sh
 curl -fsSL https://dotfiles.kevinjin.dev | bash
 ```
@@ -31,7 +34,9 @@ then, run playbooks as needed:
 ## Playbooks
 
 ### `local.yml`
+
 Main setup
+
 - Installs packages
   - zsh
   - fzf
@@ -50,31 +55,42 @@ Main setup
 - udev rules
 
 ### `headless.yml`
+
 `local.yml` but no kitty, meant for raspis, etc.
 
+### `caen.yml`
+
+umich caen, headless AND no sudo
 
 ### `kde.yml`
+
 KDE Plasma config
+
 - kwin settings
 - installs desktop-status-bar
 
 because this uses kwriteconfig6, only plasma 6 is supoported (which is perfectly reasonable)
 
 ### `macos.yml`
+
 this is a mess, will clean up later (need to use this piece of shit DE for work)
 
 ### `rime.yml`
+
 simplified chinese input method on kde
 
 ### `agent.yml`
-tries to make claude and cursor more usable
+
+tries to make claude more usable
 
 ### `eecs482.yml`
+
 class setup, opt-in. Symlinks `eecs482/version482.vim` (course staff editor
 plugin that auto-snapshots work to `*.version482` repos) into `~/.vim/plugin/`
 and `~/.local/share/nvim/site/plugin/`. See `eecs482/README.md`.
 
 ### `envycontrol.yml`
+
 installs [envycontrol](https://github.com/bayasdev/envycontrol) for Nvidia Optimus GPU switching, Fedora only for now
 installs [optimus-gpu-switcher](https://github.com/enielrodriguez/optimus-gpu-switcher) plasma widget if KDE
 
@@ -86,15 +102,14 @@ mode switching: `envycontrol -s <integrated|hybrid|nvidia>`
 
 Tracked in `udev/rules.d/` and symlinked into `/etc/udev/rules.d/` by `local.yml` on Linux.
 
-| File | Device |
-|------|--------|
-| `49-stlinkv1.rules` | STM32VL discovery (ST-Link v1) |
-| `49-stlinkv2-1.rules` | STM32 Nucleo (ST-Link v2-1) |
-| `49-stlinkv2.rules` | STM32 discovery (ST-Link v2) |
-| `49-stlinkv3.rules` | ST-Link v3 |
+| File                      | Device                                     |
+| ------------------------- | ------------------------------------------ |
+| `49-stlinkv1.rules`       | STM32VL discovery (ST-Link v1)             |
+| `49-stlinkv2-1.rules`     | STM32 Nucleo (ST-Link v2-1)                |
+| `49-stlinkv2.rules`       | STM32 discovery (ST-Link v2)               |
+| `49-stlinkv3.rules`       | ST-Link v3                                 |
 | `50-programmer_usb.rules` | FTDI FT2232 programmer, custom vendor 33aa |
-| `50-stm32_dfu.rules` | STM32 DFU mode |
-| `52-digilent-usb.rules` | Digilent FPGA/USB |
-| `99-jlink.rules` | SEGGER J-Link + CMSIS-DAP |
-| `99-SaleaeLogic.rules` | Saleae Logic analyzers |
-
+| `50-stm32_dfu.rules`      | STM32 DFU mode                             |
+| `52-digilent-usb.rules`   | Digilent FPGA/USB                          |
+| `99-jlink.rules`          | SEGGER J-Link + CMSIS-DAP                  |
+| `99-SaleaeLogic.rules`    | Saleae Logic analyzers                     |
