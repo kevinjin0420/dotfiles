@@ -22,12 +22,25 @@ neutral look", or when extending a project already built this way.
    `neutral-*`. A color appears only when it carries meaning (see Accents).
 4. **Dense.** Small text (`text-xs` / `text-sm`), tight padding (`px-2 py-1` to
    `px-3 py-1.5`), `gap-1` to `gap-3`.
+4a. **One gap per stack.** A stacked column of fields, rows, or sections uses a
+   single `gap` value for every element in it, including any nested grid or list
+   (a `grid gap-3` inside a `flex flex-col gap-3`, never `gap-2` inside `gap-3`).
+   Mixed gaps read as misalignment. Same for the space between a control and its
+   label: pick one and reuse it.
 5. **Uppercase micro-headings.** Section titles are
    `text-xs font-semibold uppercase tracking-widest text-neutral-500`.
 6. **Monospace for numbers.** Counts, percentages, IDs, timestamps:
    `font-mono text-xs`.
 7. **Interactive elements show `cursor: pointer`** when enabled; disabled
    controls are visibly muted (`disabled:opacity-40`) and not clickable.
+8. **No layout shift on async events (hard rule).** When a region's content
+   changes because a request resolved, data arrived, or a status / validation
+   message appeared, its box size must not change. Reserve the final size up
+   front with a fixed `h-[...]` (never `min-h-`), put `overflow-y-auto` on the
+   part that varies, and compute the populated height to the exact line (sum the
+   line-heights, gaps, and padding; don't eyeball it). User-initiated
+   expand/collapse is the only exception; anything the user didn't click must
+   never reflow.
 
 ## Palette
 
@@ -144,3 +157,4 @@ html { scrollbar-color: rgb(64 64 64) transparent; scrollbar-width: thin; }
 - [ ] Numbers are `font-mono`
 - [ ] Accent colors only on status/actions, one focal accent per view
 - [ ] Enabled controls show pointer cursor; disabled ones are muted
+- [ ] No region reflows on an async event (fixed `h-[...]` + inner scroll, sized to the line)
