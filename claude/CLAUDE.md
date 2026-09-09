@@ -79,6 +79,11 @@
 ## 12. CI / GitHub Actions
 
 - Always Add Dependabot: Any repository with GitHub Actions workflows must include a `.github/dependabot.yml` enabling the `github-actions` ecosystem so action versions stay updated.
+- Pinned Action Versions: Use these major versions in new workflows so Dependabot has nothing to bump:
+  - `actions/checkout@v7`
+  - `actions/deploy-pages@v5`
+  - `actions/upload-pages-artifact@v5`
+  - `xu-cheng/latex-action@v4`
 
 ## 13. Commit Messages
 
