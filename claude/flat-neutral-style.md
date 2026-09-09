@@ -35,12 +35,15 @@ neutral look", or when extending a project already built this way.
    controls are visibly muted (`disabled:opacity-40`) and not clickable.
 8. **No layout shift on async events (hard rule).** When a region's content
    changes because a request resolved, data arrived, or a status / validation
-   message appeared, its box size must not change. Reserve the final size up
-   front with a fixed `h-[...]` (never `min-h-`), put `overflow-y-auto` on the
-   part that varies, and compute the populated height to the exact line (sum the
-   line-heights, gaps, and padding; don't eyeball it). User-initiated
-   expand/collapse is the only exception; anything the user didn't click must
-   never reflow.
+   message appeared, its box size must not change. Preferred: render the same
+   DOM structure in every state (a loading / empty / error state uses the same
+   heading, the same number of rows, the same slots as the populated one, just
+   with placeholder or blank text) so the natural height is identical, then a
+   fixed number that could vary (`truncate` on rows, no wrapping). Fallback when
+   structure can't be held constant: a fixed `h-[...]` (never `min-h-`) plus
+   `overflow-y-auto` on the varying part, height summed to the exact line, not
+   eyeballed. User-initiated expand/collapse is the only exception; anything the
+   user didn't click must never reflow.
 
 ## Palette
 
