@@ -4,6 +4,9 @@
 
 vim.opt.conceallevel = 0
 
+-- stock ftplugin/arduino.vim forces 2-space indent unless this is 0
+vim.g.arduino_recommended_style = 0
+
 -- 4-space indentation by default
 vim.opt.shiftwidth = 4
 vim.opt.tabstop = 4
