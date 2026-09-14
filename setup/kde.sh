@@ -253,11 +253,27 @@ systemctl --user start plasma-plasmashell.service
 systemctl --user restart plasma-powerdevil.service
 # on wayland kwin hosts the shortcuts server, so the standalone unit just loses the bus name and dies.
 # reconfigure/restarting that unit never reloads kwin's own global shortcuts (Switch to Desktop,
-# Window Maximize, etc) either -- kwin only reads kglobalshortcutsrc for those at process start, so
-# replace it in place to pick up the new bindings without a full logout.
+# Window Maximize, etc) either -- kwin only reads kglobalshortcutsrc for those at process start.
+# worse: a running kwin flushes its live (pre-edit) shortcut state back to that same file on exit,
+# clobbering what we just wrote before the next kwin process ever reads it -- so even logging out
+# and back in, or rebooting, will NOT make these shortcuts take effect. setForeignShortcut/setShortcut
+# over dbus are no-ops against kwin's own component too (verified), and kwin_wayland --replace crashes
+# the session. The only channel that updates both kwin's live state and this file together is System
+# Settings' Shortcuts KCM -- bind these there by hand once per machine.
 if systemctl --user is-active --quiet plasma-kglobalaccel.service; then
     systemctl --user restart plasma-kglobalaccel.service
 else
-    kwin_wayland --replace &
-    disown
+    cat >&2 <<'EOF'
+
+################################################################################
+# kwin-owned global shortcuts (Switch to Desktop, Window Maximize, Overview,
+# etc) were written to kglobalshortcutsrc but WILL NOT take effect -- not now,
+# not after logout, not after reboot. kwin only loads them at process start,
+# and flushes its own still-stale in-memory copy back over this file on exit,
+# clobbering what was just written before any future kwin ever reads it.
+# Set these by hand in System Settings > Shortcuts instead; that's the only
+# thing that updates kwin's live state and this file consistently.
+################################################################################
+
+EOF
 fi
