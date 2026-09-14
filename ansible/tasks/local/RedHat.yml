@@ -1,5 +1,0 @@
-- name: Install base packages
-  ansible.builtin.dnf:
-    name: [zsh, fzf, git, git-delta, curl, neovim, python3, cowsay, sl]
-    state: present
-  become: true
