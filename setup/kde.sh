@@ -249,9 +249,13 @@ fi
 
 systemctl --user start plasma-plasmashell.service
 systemctl --user restart plasma-powerdevil.service
-# on wayland kwin hosts the shortcuts server, so the standalone unit just loses the bus name and dies
+# on wayland kwin hosts the shortcuts server, so the standalone unit just loses the bus name and dies.
+# reconfigure/restarting that unit never reloads kwin's own global shortcuts (Switch to Desktop,
+# Window Maximize, etc) either -- kwin only reads kglobalshortcutsrc for those at process start, so
+# replace it in place to pick up the new bindings without a full logout.
 if systemctl --user is-active --quiet plasma-kglobalaccel.service; then
     systemctl --user restart plasma-kglobalaccel.service
 else
-    echo "kglobalaccel is hosted by kwin -- shortcut changes apply after you log out and back in" >&2
+    kwin_wayland --replace &
+    disown
 fi
