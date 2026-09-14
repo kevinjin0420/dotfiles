@@ -1,6 +1,6 @@
 # EECS 482
 
-Class-specific setup, installed opt-in via `./ansible.sh eecs482.yml`.
+Class-specific setup, installed opt-in via `./setup/eecs482.sh`.
 
 ## `version482.vim`
 
@@ -15,5 +15,5 @@ pinned and diffable across terms.
 - Current file version: `vim-20260824`
 - To update: replace the file with the new copy the course distributes, commit.
 
-The playbook symlinks it into `~/.vim/plugin/` and `~/.config/nvim/plugin/`,
+The script symlinks it into `~/.vim/plugin/` and `~/.config/nvim/plugin/`,
 which both Vim and Neovim source automatically at startup.
