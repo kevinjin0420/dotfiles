@@ -135,6 +135,8 @@ kwc --file klassy/klassyrc --group ButtonColors --key ButtonBackgroundOpacityIna
 kwc --file klassy/klassyrc --group ButtonColors --key CloseButtonIconColorActive AsSelected
 kwc --file klassy/klassyrc --group ButtonColors --key CloseButtonIconColorInactive AsSelected
 kwc --file klassy/klassyrc --group Global --key LookAndFeelSet org.kde.breezedark.desktop
+kwc --file klassy/klassyrc --group ShadowStyle --key ShadowSizeActive ShadowMedium
+kwc --file klassy/klassyrc --group ShadowStyle --key ShadowSizeInactive ShadowSmall
 kwc --file klassy/klassyrc --group ShadowStyle --key ShadowStrength 128
 kwc --file klassy/klassyrc --group Windeco --key AnimationsEnabled false
 kwc --file klassy/klassyrc --group Windeco --key BoldTitle false
@@ -144,10 +146,10 @@ kwc --file klassy/klassyrc --group Windeco --key ColorizeThinWindowOutlineWithBu
 kwc --file klassy/klassyrc --group Windeco --key ColorizeWindowOutlineWithButton false
 kwc --file klassy/klassyrc --group Windeco --key CornerRadius 0
 kwc --file klassy/klassyrc --group Windeco --key DrawTitleBarSeparator false
+kwc --file klassy/klassyrc --group Windeco --key RoundAllCornersWhenNoBorders false
 kwc --file klassy/klassyrc --group Windeco --key UseTitleBarColorForAllBorders false
 kwc --file klassy/klassyrc --group Windeco --key WindowCornerRadius 0
-kwc --file klassy/klassyrc --group WindowOutlineStyle --key ThinWindowOutlineStyleActive WindowOutlineNone
-kwc --file klassy/klassyrc --group WindowOutlineStyle --key ThinWindowOutlineStyleInactive WindowOutlineNone
+kwc --file klassy/klassyrc --group WindowOutlineStyle --key WindowOutlineStyleInactive WindowOutlineNone
 
 kwc --file plasmarc --group Theme --key name klassy-dark
 kwc --file plasmashellrc --group PlasmaViews --group "Panel 2" --key floating 0
