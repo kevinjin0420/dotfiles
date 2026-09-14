@@ -30,8 +30,9 @@ else
 fi
 kitty_app_dir="$kitty_install_dir/kitty.app"
 
-kitty_latest="$(curl -fsSL https://api.github.com/repos/kovidgoyal/kitty/releases/latest \
-    | grep -m1 '"tag_name"' | sed -E 's/.*"v?([^"]+)".*/\1/')"
+kitty_release_json="$(curl -fsSL https://api.github.com/repos/kovidgoyal/kitty/releases/latest)"
+kitty_latest="$(printf '%s' "$kitty_release_json" \
+    | grep '"tag_name"' | sed -E 's/.*"v?([^"]+)".*/\1/')"
 kitty_installed="$("$kitty_bin_dir/kitty" --version 2>/dev/null | awk '{print $2}' || true)"
 if [[ "$kitty_installed" != "$kitty_latest" ]]; then
     curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin dest="$kitty_install_dir" launch=n

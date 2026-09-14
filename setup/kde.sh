@@ -39,7 +39,9 @@ ls /sys/class/power_supply/BAT* >/dev/null 2>&1 && has_battery=true
 
 latest_asset_url() {
     local repo="$1" asset_name="$2"
-    curl -fsSL "https://api.github.com/repos/$repo/releases/latest" \
+    local release_json
+    release_json="$(curl -fsSL "https://api.github.com/repos/$repo/releases/latest")"
+    printf '%s' "$release_json" \
         | grep -o "\"browser_download_url\": *\"[^\"]*$asset_name\"" \
         | head -1 | sed -E 's/.*"(https[^"]+)"/\1/'
 }
