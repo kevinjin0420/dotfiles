@@ -14,12 +14,13 @@ declare -A DESC=(
     [spotify]="Spotify"
     [texlive]="LaTeX (texlive)"
     [wechat]="WeChat"
+    [zathura]="Zathura (PDF viewer)"
 )
 options=(chrome vscode discord slack spotify)
 case "$family" in
     Archlinux|RedHat) options+=(texlive) ;;
 esac
-options+=(wechat)
+options+=(wechat zathura)
 if [[ "$family" == "Darwin" ]]; then
     DESC[zed]="Zed"
     options+=(zed)
@@ -53,6 +54,7 @@ Archlinux)
     want discord && pkgs+=(discord)
     want slack && pkgs+=(slack-desktop)
     want spotify && pkgs+=(spotify)
+    want zathura && pkgs+=(zathura zathura-pdf-poppler)
     yay -S --noconfirm --needed "${pkgs[@]}"
     ;;
 Debian)
@@ -71,6 +73,7 @@ Debian)
             | sudo tee /etc/apt/sources.list.d/vscode.list >/dev/null
         pkgs+=(code)
     fi
+    want zathura && pkgs+=(zathura zathura-pdf-poppler)
     sudo apt-get update
     sudo apt-get install -y "${pkgs[@]}"
     if want discord && ! dpkg -s discord >/dev/null 2>&1; then
@@ -111,6 +114,7 @@ EOF
     want chrome && pkgs+=(google-chrome-stable)
     want vscode && pkgs+=(code)
     want texlive && pkgs+=(texlive-scheme-full)
+    want zathura && pkgs+=(zathura zathura-pdf-poppler)
     sudo dnf install -y "${pkgs[@]}"
     if want discord && ! rpm -q discord >/dev/null 2>&1; then
         curl -fsSL "https://discord.com/api/download?platform=linux&format=rpm" -o /tmp/discord.rpm
@@ -127,7 +131,9 @@ Darwin)
     want spotify && casks+=(spotify)
     want wechat && casks+=(wechat)
     [[ ${#casks[@]} -eq 0 ]] || brew install --cask "${casks[@]}"
-    brew install gh sl fastfetch btop gti cowsay awscli
+    formulas=(gh sl fastfetch btop gti cowsay awscli)
+    want zathura && formulas+=(zathura)
+    brew install "${formulas[@]}"
     ;;
 esac
 
