@@ -81,8 +81,9 @@ cp "$dotfiles_dir/kde/desktoptheme-klassy/plasmarc" "$user_home/.local/share/pla
 
 plasma-apply-colorscheme Minimal
 
-activity_id="$(grep -oP '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}' \
-    "$user_home/.config/kactivitymanagerdrc" | head -1)"
+activity_id="$(grep -m1 -oP '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}' \
+    "$user_home/.config/kactivitymanagerdrc" || true)"
+[[ -n "$activity_id" ]] || { echo "no activity id in kactivitymanagerdrc -- panel layout would be deployed to a dead activity" >&2; exit 1; }
 
 cp "$dotfiles_dir/kde/kwinrulesrc" "$user_home/.config/kwinrulesrc"
 
@@ -248,4 +249,9 @@ fi
 
 systemctl --user start plasma-plasmashell.service
 systemctl --user restart plasma-powerdevil.service
-systemctl --user restart plasma-kglobalaccel.service
+# on wayland kwin hosts the shortcuts server, so the standalone unit just loses the bus name and dies
+if systemctl --user is-active --quiet plasma-kglobalaccel.service; then
+    systemctl --user restart plasma-kglobalaccel.service
+else
+    echo "kglobalaccel is hosted by kwin -- shortcut changes apply after you log out and back in" >&2
+fi
