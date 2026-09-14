@@ -46,6 +46,7 @@ declare -A dotfile_links=(
     ["dots/always_forget.md"]="always-forget.md"
     ["dots/bash_profile"]=".bash_profile"
     ["dots/bash_profile"]=".bashrc"
+    ["dots/clang-format"]=".clang-format"
     ["config/tmux/tmux.conf"]=".config/tmux/tmux.conf"
     ["config/nvim"]=".config/nvim"
 )

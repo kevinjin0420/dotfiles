@@ -30,6 +30,7 @@ declare -A dotfile_links=(
     ["dots/p10k.zsh"]=".p10k.zsh"
     ["dots/gitconfig"]=".gitconfig"
     ["dots/always_forget.md"]="always-forget.md"
+    ["dots/clang-format"]=".clang-format"
     ["config/tmux/tmux.conf"]=".config/tmux/tmux.conf"
 )
 for src in "${!dotfile_links[@]}"; do
