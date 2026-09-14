@@ -12,7 +12,7 @@ kitty_bin="$user_home/.local/kitty.app/bin/kitty"
 command -v kwriteconfig6 >/dev/null || { echo "kwriteconfig6 not found -- is KDE Plasma installed?" >&2; exit 1; }
 
 klassy_installed() {
-    find /usr /usr/local -name '*klassy*' -name '*.so' 2>/dev/null | grep -q .
+    [[ -n "$(find /usr /usr/local -name '*klassy*' -name '*.so' -print -quit 2>/dev/null)" ]]
 }
 
 if ! klassy_installed; then
@@ -102,7 +102,7 @@ if [[ -z "$logo_path" ]]; then
     done
 fi
 if [[ -z "$logo_path" ]]; then
-    logo_path="$(find /usr/share/pixmaps -name "$logo_icon_name.*" 2>/dev/null | head -1)"
+    logo_path="$(find /usr/share/pixmaps -name "$logo_icon_name.*" -print -quit 2>/dev/null)"
 fi
 
 kwc() { kwriteconfig6 "$@"; }
