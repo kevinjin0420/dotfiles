@@ -48,6 +48,7 @@ ensure_dir \
     "$user_home/.config/tmux" \
     "$user_home/.config/fastfetch" \
     "$user_home/.config/zed" \
+    "$user_home/.config/zathura" \
     "$user_home/Documents/wallpapers"
 
 for f in "$dotfiles_dir"/wallpapers/*; do
@@ -94,6 +95,7 @@ declare -A dotfile_links=(
     ["config/fastfetch/config.jsonc"]=".config/fastfetch/config.jsonc"
     ["config/fastfetch/kuromi.txt"]=".config/fastfetch/kuromi.txt"
     ["config/zed/settings.json"]=".config/zed/settings.json"
+    ["config/zathura/zathurarc"]=".config/zathura/zathurarc"
 )
 for src in "${!dotfile_links[@]}"; do
     symlink "$dotfiles_dir/$src" "$user_home/${dotfile_links[$src]}"
