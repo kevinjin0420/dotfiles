@@ -1,0 +1,30 @@
+{
+  "workflowKeywordTriggerEnabled": false,
+  "enabledPlugins": {
+    "ponytail@ponytail": true,
+    "frontend-design@claude-plugins-official": false,
+    "clangd-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
+    }
+  },
+  "effortLevel": "medium",
+  "modelSettings": {
+    "claude-sonnet-5": {
+      "effortLevel": "medium"
+    },
+    "claude-opus-5": {
+      "effortLevel": "high"
+    }
+  },
+  "promptSuggestionEnabled": false,
+  "awaySummaryEnabled": false,
+  "theme": "dark",
+  "verbose": true,
+  "switchModelsOnFlag": false
+}

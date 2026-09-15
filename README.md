@@ -13,9 +13,9 @@ basically the operating systems I use
 
 for a freshly installed OS:
 
-- install Ansible, git
+- install git
 - clone this repo
-- run `./ansible.sh local.yml` to start
+- run `./setup/local.sh` to start
 
 OR, bootstrap script:
 
@@ -23,17 +23,17 @@ OR, bootstrap script:
 curl -fsSL https://dotfiles.kevinjin.dev | bash
 ```
 
-then, run playbooks as needed:
+then, run scripts as needed:
 
 ```sh
-./ansible.sh <playbook.yml>
+./setup/<script.sh>
 ```
 
 ---
 
-## Playbooks
+## Setup scripts
 
-### `local.yml`
+### `local.sh`
 
 Main setup
 
@@ -54,15 +54,15 @@ Main setup
 - symlink dotfiles
 - udev rules
 
-### `headless.yml`
+### `headless.sh`
 
-`local.yml` but no kitty, meant for raspis, etc.
+`local.sh` but no kitty, meant for raspis, etc.
 
-### `caen.yml`
+### `caen.sh`
 
 umich caen, headless AND no sudo
 
-### `kde.yml`
+### `kde.sh`
 
 KDE Plasma config
 
@@ -71,25 +71,25 @@ KDE Plasma config
 
 because this uses kwriteconfig6, only plasma 6 is supoported (which is perfectly reasonable)
 
-### `macos.yml`
+### `macos.sh`
 
 this is a mess, will clean up later (need to use this piece of shit DE for work)
 
-### `rime.yml`
+### `rime.sh`
 
 simplified chinese input method on kde
 
-### `agent.yml`
+### `agent.sh`
 
 tries to make claude more usable
 
-### `eecs482.yml`
+### `eecs482.sh`
 
 class setup, opt-in. Symlinks `eecs482/version482.vim` (course staff editor
 plugin that auto-snapshots work to `*.version482` repos) into `~/.vim/plugin/`
 and `~/.local/share/nvim/site/plugin/`. See `eecs482/README.md`.
 
-### `envycontrol.yml`
+### `envycontrol.sh`
 
 installs [envycontrol](https://github.com/bayasdev/envycontrol) for Nvidia Optimus GPU switching, Fedora only for now
 installs [optimus-gpu-switcher](https://github.com/enielrodriguez/optimus-gpu-switcher) plasma widget if KDE
@@ -100,7 +100,7 @@ mode switching: `envycontrol -s <integrated|hybrid|nvidia>`
 
 ## udev rules
 
-Tracked in `udev/rules.d/` and symlinked into `/etc/udev/rules.d/` by `local.yml` on Linux.
+Tracked in `udev/rules.d/` and symlinked into `/etc/udev/rules.d/` by `local.sh` on Linux.
 
 | File                      | Device                                     |
 | ------------------------- | ------------------------------------------ |
