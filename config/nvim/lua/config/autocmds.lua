@@ -18,3 +18,17 @@ vim.api.nvim_create_autocmd("BufWritePost", {
     })
   end,
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = latex_compile_group,
+  pattern = "tex",
+  callback = function(args)
+    vim.api.nvim_buf_create_user_command(args.buf, "TexView", function()
+      local pdf = vim.fn.expand("%:p:r") .. ".pdf"
+      local line = vim.fn.line(".")
+      vim.fn.jobstart({ "zathura", "--synctex-forward", line .. ":1:" .. vim.fn.expand("%:p"), pdf }, {
+        detach = true,
+      })
+    end, { desc = "Open PDF in Zathura (synctex forward)" })
+  end,
+})
