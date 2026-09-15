@@ -67,4 +67,9 @@ export XMODIFIERS=@im=fcitx
 EOF
         chmod 0644 "$user_home/.xprofile"
     fi
+
+    if command -v flatpak >/dev/null 2>&1 && flatpak info com.tencent.WeChat >/dev/null 2>&1; then
+        flatpak override --user com.tencent.WeChat \
+            --env=GTK_IM_MODULE=fcitx --env=QT_IM_MODULE=fcitx --env=XMODIFIERS=@im=fcitx
+    fi
 fi
