@@ -32,3 +32,10 @@ vim.api.nvim_create_autocmd("FileType", {
     end, { desc = "Open PDF in Zathura (synctex forward)" })
   end,
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "markdown", "tex" },
+  callback = function()
+    vim.opt_local.wrap = true
+  end,
+})
