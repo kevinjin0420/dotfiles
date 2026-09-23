@@ -12,3 +12,8 @@ vim.opt.shiftwidth = 4
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
 vim.opt.expandtab = true
+
+-- no anim over ssh
+if vim.env.SSH_CONNECTION then
+  vim.g.snacks_animate = false
+end
