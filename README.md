@@ -58,6 +58,9 @@ Main setup
 
 `local.sh` but no kitty, meant for raspis, etc.
 
+- latest stable nvim + tree-sitter CLI in `~/.local` (arm64/x86_64, 64-bit OS only)
+- symlinks this repo's nvim config and restores plugins from `lazy-lock.json`
+
 ### `caen.sh`
 
 umich caen, headless AND no sudo
