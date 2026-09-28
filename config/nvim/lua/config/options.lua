@@ -13,7 +13,15 @@ vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
 vim.opt.expandtab = true
 
--- no anim over ssh
-if vim.env.SSH_CONNECTION then
-  vim.g.snacks_animate = false
+-- no animations
+vim.g.snacks_animate = false
+
+-- OSC52 clipboard over SSH
+if vim.env.SSH_TTY then
+    local osc52 = require("vim.ui.clipboard.osc52")
+    vim.g.clipboard = {
+        name = "OSC 52",
+        copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
+        paste = { ["+"] = osc52.paste("+"), ["*"] = osc52.paste("*") },
+    }
 end

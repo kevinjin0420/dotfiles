@@ -21,9 +21,9 @@ fi
 neovim_dir="nvim-linux-$neovim_arch"
 
 case "$(os_family)" in
-    Debian)    sudo apt-get update && sudo apt-get install -y zsh fzf git curl tar gzip python3 python3-venv tmux build-essential unzip ripgrep fd-find nodejs npm cowsay sl ;;
-    Archlinux) sudo pacman -Sy --noconfirm --needed zsh fzf git curl tar gzip python tmux base-devel unzip ripgrep fd nodejs npm cowsay sl ;;
-    RedHat)    sudo dnf install -y zsh fzf git curl tar gzip python3 tmux gcc make unzip ripgrep fd-find nodejs npm cowsay sl ;;
+    Debian)    sudo apt-get update && sudo apt-get install -y zsh fzf git git-delta curl tar gzip python3 python3-venv tmux build-essential unzip ripgrep fd-find nodejs npm cowsay sl ;;
+    Archlinux) sudo pacman -Sy --noconfirm --needed zsh fzf git git-delta curl tar gzip python tmux base-devel unzip ripgrep fd nodejs npm cowsay sl ;;
+    RedHat)    sudo dnf install -y zsh fzf git git-delta curl tar gzip python3 tmux gcc make unzip ripgrep fd-find nodejs npm cowsay sl ;;
 esac
 
 zsh_path="$(which zsh)"
