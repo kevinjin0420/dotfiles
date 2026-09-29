@@ -75,6 +75,7 @@
 - Links as Sub-Bullets: Pull external references (issue trackers, upstream fix commits) out of inline parentheses into their own sub-bullet with a markdown link, e.g. `- fixed [here](url)`, rather than `(fixed upstream, see url)`.
 - State the Real Reason: Give the actual underlying constraint driving a decision (e.g. "upstream doesn't publish arm64 binaries, maintaining a fork costs CI budget") instead of a vague summary phrase (e.g. "since it's not needed there").
 - No Narrative in Summary Bullets: Testing notes and process narration belong in the test plan section, not folded into a summary bullet as prose.
+- No Colons, Em-dashes, or Needless Parentheses in Written Answers: In prose deliverables such as lab writeups and reports, expand a colon or parenthetical into its own proper sentence instead. Parentheses that are part of code, like a function call, are fine.
 
 ## 12. CI / GitHub Actions
 
