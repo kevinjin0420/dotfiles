@@ -15,6 +15,10 @@ case "$family" in
     Darwin)    brew install zsh fzf git git-delta curl neovim python3 cowsay sl ;;
 esac
 
+if [[ "$family" == "RedHat" ]] && rpm -q PackageKit-command-not-found >/dev/null 2>&1; then
+    sudo dnf remove -y PackageKit-command-not-found
+fi
+
 zsh_path="$(which zsh)"
 grep -qxF "$zsh_path" /etc/shells || echo "$zsh_path" | sudo tee -a /etc/shells >/dev/null
 sudo chsh -s "$zsh_path" "$USER"

@@ -26,6 +26,10 @@ case "$(os_family)" in
     RedHat)    sudo dnf install -y zsh fzf git git-delta curl tar gzip python3 tmux gcc make unzip ripgrep fd-find nodejs npm cowsay sl ;;
 esac
 
+if [[ "$(os_family)" == "RedHat" ]] && rpm -q PackageKit-command-not-found >/dev/null 2>&1; then
+    sudo dnf remove -y PackageKit-command-not-found
+fi
+
 zsh_path="$(which zsh)"
 grep -qxF "$zsh_path" /etc/shells || echo "$zsh_path" | sudo tee -a /etc/shells >/dev/null
 sudo chsh -s "$zsh_path" "$USER"
