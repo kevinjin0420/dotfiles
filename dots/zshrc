@@ -66,10 +66,11 @@ fi
 [[ "$TERM" == linux ]] && typeset -g POWERLEVEL9K_MODE=ascii
 
 # CubeCLT
-if [[ -d /opt/st/stm32cubeclt_1.21.0 ]]; then
-    export PATH="$PATH:/opt/st/stm32cubeclt_1.21.0/STM32CubeProgrammer/bin"
-    export PATH="$PATH:/opt/st/stm32cubeclt_1.21.0/GNU-tools-for-STM32/bin"
-fi
+for cubeclt_dir in /opt/st/stm32cubeclt_*(N/nOn[1]); do
+    export PATH="$PATH:$cubeclt_dir/STM32CubeProgrammer/bin"
+    export PATH="$PATH:$cubeclt_dir/GNU-tools-for-STM32/bin"
+done
+unset cubeclt_dir
 
 export PATH="/home/kevinjin/.pixi/bin:$PATH"
 
