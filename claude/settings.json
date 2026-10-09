@@ -26,6 +26,5 @@
   "awaySummaryEnabled": false,
   "theme": "dark",
   "verbose": true,
-  "switchModelsOnFlag": false,
-  "model": "sonnet"
+  "switchModelsOnFlag": false
 }
