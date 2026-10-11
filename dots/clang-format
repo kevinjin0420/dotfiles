@@ -4,3 +4,5 @@ TabWidth: 4
 UseTab: Never
 ColumnLimit: 100
 AccessModifierOffset: -4
+AllowShortBlocksOnASingleLine: Empty
+AllowShortLoopsOnASingleLine: true
