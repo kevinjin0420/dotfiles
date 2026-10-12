@@ -25,3 +25,5 @@ if vim.env.SSH_TTY then
         paste = { ["+"] = osc52.paste("+"), ["*"] = osc52.paste("*") },
     }
 end
+
+vim.g.lazyvim_python_lsp = "basedpyright"
