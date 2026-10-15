@@ -11,6 +11,3 @@ ensure_dir "$user_home/.claude"
 for f in "$dotfiles_dir"/claude/*; do
     symlink "$f" "$user_home/.claude/$(basename "$f")"
 done
-
-ensure_dir "$user_home/.cursor/rules"
-symlink "$dotfiles_dir/cursor/rules/universal.mdc" "$user_home/.cursor/rules/universal.mdc"

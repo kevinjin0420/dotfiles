@@ -8,7 +8,6 @@ family="$(os_family)"
 
 declare -A DESC=(
     [chrome]="Google Chrome"
-    [vscode]="Visual Studio Code"
     [discord]="Discord"
     [slack]="Slack"
     [spotify]="Spotify"
@@ -16,15 +15,11 @@ declare -A DESC=(
     [wechat]="WeChat"
     [zathura]="Zathura (PDF viewer)"
 )
-options=(chrome vscode discord slack spotify)
+options=(chrome discord slack spotify)
 case "$family" in
     Archlinux|RedHat) options+=(texlive) ;;
 esac
 options+=(wechat zathura)
-if [[ "$family" == "Darwin" ]]; then
-    DESC[zed]="Zed"
-    options+=(zed)
-fi
 
 declare -A INSTALL
 echo "Select software to install (Enter = yes):"
@@ -50,7 +45,6 @@ Archlinux)
     pkgs=(github-cli sl fastfetch btop gti cowsay wl-clipboard aws-cli-bin)
     want chrome && pkgs+=(google-chrome)
     want texlive && pkgs+=(texlive-basic texlive-latexextra texlive-fontsrecommended)
-    want vscode && pkgs+=(visual-studio-code-bin)
     want discord && pkgs+=(discord)
     want slack && pkgs+=(slack-desktop)
     want spotify && pkgs+=(spotify)
@@ -65,13 +59,6 @@ Debian)
         echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.asc] https://dl.google.com/linux/chrome/deb/ stable main" \
             | sudo tee /etc/apt/sources.list.d/google-chrome.list >/dev/null
         pkgs+=(google-chrome-stable)
-    fi
-    if want vscode; then
-        sudo install -d -m 0755 /etc/apt/keyrings
-        sudo curl -fsSL https://packages.microsoft.com/keys/microsoft.asc -o /etc/apt/keyrings/microsoft.asc
-        echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.asc] https://packages.microsoft.com/repos/code stable main" \
-            | sudo tee /etc/apt/sources.list.d/vscode.list >/dev/null
-        pkgs+=(code)
     fi
     want zathura && pkgs+=(zathura zathura-pdf-poppler)
     sudo apt-get update
@@ -92,16 +79,6 @@ gpgcheck=1
 gpgkey=https://dl.google.com/linux/linux_signing_key.pub
 EOF
     fi
-    if want vscode; then
-        sudo tee /etc/yum.repos.d/vscode.repo >/dev/null <<'EOF'
-[vscode]
-name=Visual Studio Code
-baseurl=https://packages.microsoft.com/yumrepos/vscode
-enabled=1
-gpgcheck=1
-gpgkey=https://packages.microsoft.com/keys/microsoft.asc
-EOF
-    fi
     sudo tee /etc/yum.repos.d/gh-cli.repo >/dev/null <<'EOF'
 [gh-cli]
 name=packages for the GitHub CLI
@@ -112,7 +89,6 @@ gpgkey=https://cli.github.com/packages/githubcli-archive-keyring.asc
 EOF
     pkgs=(gh sl fastfetch btop gti cowsay wl-clipboard awscli2)
     want chrome && pkgs+=(google-chrome-stable)
-    want vscode && pkgs+=(code)
     want texlive && pkgs+=(texlive-scheme-full)
     want zathura && pkgs+=(zathura zathura-pdf-poppler)
     sudo dnf install -y "${pkgs[@]}"
@@ -124,8 +100,6 @@ EOF
 Darwin)
     casks=()
     want chrome && casks+=(google-chrome)
-    want vscode && casks+=(visual-studio-code)
-    want zed && casks+=(zed)
     want discord && casks+=(discord)
     want slack && casks+=(slack)
     want spotify && casks+=(spotify)

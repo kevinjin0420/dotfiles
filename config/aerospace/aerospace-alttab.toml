@@ -49,14 +49,10 @@ ctrl-alt-right = ['layout tiling', 'move right']
 ctrl-alt-up    = 'layout tiling'
 ctrl-alt-down  = 'layout floating'
 
-# Auto-tile browser + editor (these split into left/right halves).
+# Auto-tile browser.
 # Each must also fire the AltTab notify, then stop (no fall-through to float).
 [[on-window-detected]]
 if.app-id = 'com.google.Chrome'
-run = ['layout tiling', 'exec-and-forget /bin/bash -c "/Applications/AltTab.app/Contents/MacOS/AltTab --aerospace-mapping-changed"']
-
-[[on-window-detected]]
-if.app-id = 'com.microsoft.VSCode'
 run = ['layout tiling', 'exec-and-forget /bin/bash -c "/Applications/AltTab.app/Contents/MacOS/AltTab --aerospace-mapping-changed"']
 
 # Default: everything else floats (kitty, Discord, Slack, Finder, ...)

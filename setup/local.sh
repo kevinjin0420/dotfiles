@@ -51,7 +51,6 @@ ensure_dir \
     "$user_home/.config/kitty" \
     "$user_home/.config/tmux" \
     "$user_home/.config/fastfetch" \
-    "$user_home/.config/zed" \
     "$user_home/.config/zathura" \
     "$user_home/Documents/wallpapers"
 
@@ -98,7 +97,6 @@ declare -A dotfile_links=(
     ["config/tmux/tmux.conf"]=".config/tmux/tmux.conf"
     ["config/fastfetch/config.jsonc"]=".config/fastfetch/config.jsonc"
     ["config/fastfetch/kuromi.txt"]=".config/fastfetch/kuromi.txt"
-    ["config/zed/settings.json"]=".config/zed/settings.json"
     ["config/zathura/zathurarc"]=".config/zathura/zathurarc"
 )
 for src in "${!dotfile_links[@]}"; do
