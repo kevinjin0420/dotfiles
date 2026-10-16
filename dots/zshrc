@@ -24,6 +24,7 @@ esac
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+export SUDO_EDITOR="nvim"
 [ -d ~/intelFPGA/20.1/modelsim_ase/bin ] && export PATH="$PATH:$HOME/intelFPGA/20.1/modelsim_ase/bin"
 [ -d /usr/local/texlive/2025/bin/x86_64-linux ] && export PATH="/usr/local/texlive/2025/bin/x86_64-linux:$PATH"
 

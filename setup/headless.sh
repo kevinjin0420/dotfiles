@@ -42,9 +42,10 @@ neovim_tmp="$(mktemp -d)"
 trap 'rm -rf "$neovim_tmp"' EXIT
 curl -fsSL "https://github.com/neovim/neovim/releases/latest/download/$neovim_dir.tar.gz" \
     | tar -xz -C "$neovim_tmp"
-rm -rf "$local_prefix/opt/$neovim_dir"
-mv "$neovim_tmp/$neovim_dir" "$local_prefix/opt/$neovim_dir"
-symlink "$local_prefix/opt/$neovim_dir/bin/nvim" "$local_prefix/bin/nvim"
+sudo rm -rf "/opt/$neovim_dir" "$local_prefix/opt/$neovim_dir" "$local_prefix/bin/nvim"
+sudo mv "$neovim_tmp/$neovim_dir" "/opt/$neovim_dir"
+sudo chown -R root:root "/opt/$neovim_dir"
+sudo ln -sf "/opt/$neovim_dir/bin/nvim" /usr/local/bin/nvim
 
 # nvim-treesitter main branch compiles parsers with the tree-sitter CLI, which distro repos ship too old
 curl -fsSL "https://github.com/tree-sitter/tree-sitter/releases/latest/download/tree-sitter-linux-$tree_sitter_arch.gz" \
@@ -68,6 +69,6 @@ for src in "${!dotfile_links[@]}"; do
     symlink "$dotfiles_dir/$src" "$user_home/${dotfile_links[$src]}"
 done
 
-PATH="$local_prefix/bin:$PATH" "$local_prefix/bin/nvim" --headless "+Lazy! restore" +qa
+PATH="$local_prefix/bin:$PATH" /usr/local/bin/nvim --headless "+Lazy! restore" +qa
 
-echo "nvim $("$local_prefix/bin/nvim" --version | head -n1) installed; plugins restored from lazy-lock.json"
+echo "nvim $(/usr/local/bin/nvim --version | head -n1) installed; plugins restored from lazy-lock.json"
