@@ -28,7 +28,7 @@ ensure_dir() {
 symlink() {
     local src="$1" dest="$2"
     mkdir -p "$(dirname "$dest")"
-    ln -sf "$src" "$dest"
+    ln -sfn "$src" "$dest"
 }
 
 clone_shallow() {
