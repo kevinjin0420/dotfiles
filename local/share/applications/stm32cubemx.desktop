@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=STM32CubeMX
+Comment=STM32 pin and peripheral configurator
+Exec=/usr/local/STMicroelectronics/STM32Cube/STM32CubeMX/STM32CubeMX
+TryExec=/usr/local/STMicroelectronics/STM32Cube/STM32CubeMX/STM32CubeMX
+Icon=/usr/local/STMicroelectronics/STM32Cube/STM32CubeMX/help/STM32CubeMX.png
+Categories=Development;Electronics;
+StartupWMClass=com-st-microxplorer-maingui-STM32CubeMX
+Terminal=false

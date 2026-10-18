@@ -71,6 +71,9 @@ if [[ "$family" != "Darwin" ]]; then
             "$dest"
     done
     sed -i '/^Categories=/a X-KDE-Shortcuts=Alt+Return' "$user_home/.local/share/applications/kitty.desktop"
+    if [[ -x /usr/local/STMicroelectronics/STM32Cube/STM32CubeMX/STM32CubeMX ]]; then
+        symlink "$dotfiles_dir/local/share/applications/stm32cubemx.desktop" "$user_home/.local/share/applications/stm32cubemx.desktop"
+    fi
     printf 'kitty.desktop\n' > "$user_home/.config/xdg-terminals.list"
     kbuildsycoca6 --noincremental 2>/dev/null || true
 fi
