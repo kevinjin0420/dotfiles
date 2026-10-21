@@ -1,0 +1,20 @@
+#!/usr/bin/bash
+set -uo pipefail
+
+new_kver="${1:-}"
+running_kver="$(uname -r)"
+
+[[ -n "$new_kver" ]] || { echo "usage: $0 <kernel-version>" >&2; exit 2; }
+[[ "$new_kver" != "$running_kver" ]] || exit 0
+
+if modinfo -k "$new_kver" nvidia >/dev/null 2>&1; then
+    exit 0
+fi
+
+if ! modinfo -k "$running_kver" nvidia >/dev/null 2>&1; then
+    echo "nvidia module missing for $new_kver and running kernel $running_kver, leaving boot default alone" >&2
+    exit 0
+fi
+
+grubby --set-default "/boot/vmlinuz-$running_kver"
+echo "nvidia module missing for $new_kver, boot default pinned to $running_kver" >&2
