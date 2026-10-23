@@ -52,10 +52,13 @@ kpackagetool6 --type Plasma/Applet --install /tmp/plasma-i3-pager.plasmoid 2>/de
     || kpackagetool6 --type Plasma/Applet --upgrade /tmp/plasma-i3-pager.plasmoid
 
 if $has_battery; then
-    curl -fsSL -o /tmp/plasma-charge-limiter.plasmoid \
-        "$(latest_asset_url kevinjin0420/plasma-charge-limiter plasma-charge-limiter.plasmoid)"
-    kpackagetool6 --type Plasma/Applet --install /tmp/plasma-charge-limiter.plasmoid 2>/dev/null \
-        || kpackagetool6 --type Plasma/Applet --upgrade /tmp/plasma-charge-limiter.plasmoid
+    echo 'SUBSYSTEM=="power_supply", KERNEL=="BAT*", ATTR{charge_control_end_threshold}="80"' \
+        | sudo tee /etc/udev/rules.d/99-charge-limit.rules >/dev/null
+    for threshold in /sys/class/power_supply/BAT*/charge_control_end_threshold; do
+        if [[ -e "$threshold" ]]; then
+            echo 80 | sudo tee "$threshold" >/dev/null
+        fi
+    done
 fi
 
 # a symlinked package dir is a local checkout; kpackagetool6 --upgrade would

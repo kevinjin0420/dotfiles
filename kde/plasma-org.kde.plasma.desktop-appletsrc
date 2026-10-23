@@ -234,14 +234,6 @@ plugin=org.kde.plasma.cameraindicator
 immutability=1
 plugin=org.kde.plasma.brightness
 
-[Containments][2][Applets][7][Applets][61]
-immutability=1
-plugin=org.kevinjin.plasma.chargelimit
-
-[Containments][2][Applets][7][Applets][61][Configuration][ConfigDialog]
-DialogHeight=630
-DialogWidth=810
-
 [Containments][2][Applets][7][Applets][62]
 immutability=1
 plugin=org.kde.plasma.weather
@@ -255,9 +247,9 @@ DialogHeight=540
 DialogWidth=720
 
 [Containments][2][Applets][7][General]
-extraItems=org.kde.plasma.printmanager,org.kde.plasma.battery,org.kde.plasma.vault,org.kde.plasma.devicenotifier,org.kde.plasma.notifications,org.kde.plasma.clipboard,org.kde.plasma.bluetooth,org.kde.plasma.volume,org.kde.plasma.mediacontroller,org.kde.plasma.keyboardlayout,org.kde.plasma.networkmanagement,org.kde.plasma.manage-inputmethod,org.kde.kscreen,org.kde.plasma.brightness,org.kde.plasma.cameraindicator,org.kevinjin.plasma.chargelimit,org.kde.plasma.keyboardindicator,org.kde.plasma.weather
+extraItems=org.kde.plasma.printmanager,org.kde.plasma.battery,org.kde.plasma.vault,org.kde.plasma.devicenotifier,org.kde.plasma.notifications,org.kde.plasma.clipboard,org.kde.plasma.bluetooth,org.kde.plasma.volume,org.kde.plasma.mediacontroller,org.kde.plasma.keyboardlayout,org.kde.plasma.networkmanagement,org.kde.plasma.manage-inputmethod,org.kde.kscreen,org.kde.plasma.brightness,org.kde.plasma.cameraindicator,org.kde.plasma.keyboardindicator,org.kde.plasma.weather
 knownItems=org.kde.plasma.printmanager,org.kde.plasma.battery,org.kde.plasma.vault,org.kde.kdeconnect,org.kde.plasma.devicenotifier,org.kde.plasma.notifications,org.kde.plasma.clipboard,org.kde.plasma.bluetooth,org.kde.plasma.volume,org.kde.plasma.mediacontroller,org.kde.plasma.keyboardlayout,org.kde.plasma.networkmanagement,org.kde.plasma.manage-inputmethod,org.kde.kscreen,org.kde.plasma.brightness,org.kde.plasma.cameraindicator,org.kde.plasma.keyboardindicator,org.kde.plasma.weather
-shownItems=org.kde.plasma.battery,org.kde.plasma.bluetooth,org.kde.plasma.volume,org.kevinjin.plasma.chargelimit
+shownItems=org.kde.plasma.battery,org.kde.plasma.bluetooth,org.kde.plasma.volume
 
 [Containments][2][ConfigDialog]
 DialogHeight=84
