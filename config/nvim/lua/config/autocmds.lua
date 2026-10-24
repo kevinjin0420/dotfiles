@@ -40,12 +40,31 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- matches markdownlint MD007 and prettier list indentation
+-- 2 matches markdownlint MD007 and prettier list indentation; code fences get 4
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "markdown",
-  callback = function()
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.tabstop = 2
-    vim.opt_local.softtabstop = 2
+  callback = function(args)
+    local function apply_indent_for_cursor()
+      local ok, parser = pcall(vim.treesitter.get_parser, args.buf)
+      local lang = "markdown"
+      if ok and parser then
+        local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+        lang = parser:language_for_range({ row - 1, col, row - 1, col }):lang()
+      end
+      local width = (lang == "markdown" or lang == "markdown_inline") and 2 or 4
+      vim.bo[args.buf].shiftwidth = width
+      vim.bo[args.buf].tabstop = width
+      vim.bo[args.buf].softtabstop = width
+      -- treesitter indent misplaces lines while injected C/C++ is still incomplete
+      local c_like = lang == "c" or lang == "cpp"
+      vim.bo[args.buf].cindent = c_like
+      vim.bo[args.buf].indentexpr = c_like and "" or "v:lua.LazyVim.treesitter.indentexpr()"
+    end
+    apply_indent_for_cursor()
+    vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "InsertEnter" }, {
+      group = vim.api.nvim_create_augroup("markdown_fence_indent_" .. args.buf, { clear = true }),
+      buffer = args.buf,
+      callback = apply_indent_for_cursor,
+    })
   end,
 })
