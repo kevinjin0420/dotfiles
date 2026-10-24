@@ -17,7 +17,9 @@ command -v open >/dev/null || alias open="xdg-open"
 
 flatpak() {
     command flatpak "$@" || return
-    [[ $1 == uninstall ]] && command flatpak uninstall --unused -y
+    if [[ $1 == uninstall ]]; then
+        command flatpak uninstall --unused -y
+    fi
 }
 
 # Exports & PATH
