@@ -15,6 +15,11 @@ alias s="kitten ssh"
 
 command -v open >/dev/null || alias open="xdg-open"
 
+flatpak() {
+    command flatpak "$@" || return
+    [[ $1 == uninstall ]] && command flatpak uninstall --unused -y
+}
+
 # Exports & PATH
 export PNPM_HOME="$HOME/.local/share/pnpm"
 case ":$PATH:" in
