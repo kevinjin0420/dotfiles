@@ -51,7 +51,9 @@ vim.api.nvim_create_autocmd("FileType", {
         local row, col = unpack(vim.api.nvim_win_get_cursor(0))
         lang = parser:language_for_range({ row - 1, col, row - 1, col }):lang()
       end
-      local width = (lang == "markdown" or lang == "markdown_inline") and 2 or 4
+      local in_fence = lang ~= "markdown" and lang ~= "markdown_inline"
+      vim.b[args.buf].fence_lang = in_fence and lang or nil
+      local width = in_fence and 4 or 2
       vim.bo[args.buf].shiftwidth = width
       vim.bo[args.buf].tabstop = width
       vim.bo[args.buf].softtabstop = width
