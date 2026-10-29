@@ -20,11 +20,15 @@
     },
     "claude-opus-5": {
       "effortLevel": "high"
+    },
+    "claude-opus-5-5": {
+      "effortLevel": "high"
     }
   },
   "promptSuggestionEnabled": false,
   "awaySummaryEnabled": false,
   "theme": "dark",
   "verbose": true,
-  "switchModelsOnFlag": false
+  "switchModelsOnFlag": false,
+  "model": "opus"
 }

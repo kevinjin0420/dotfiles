@@ -31,6 +31,7 @@
 
 [diff]
 	colorMoved = default
+	tool = vimdiff
 
 [merge]
 	conflictstyle = diff3
@@ -47,3 +48,5 @@
 	required = true
 [pull]
 	rebase = false
+[difftool]
+	prompt = false
