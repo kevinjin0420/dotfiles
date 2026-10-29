@@ -9,10 +9,10 @@ user_home="$HOME"
 family="$(os_family)"
 
 case "$family" in
-    Archlinux) sudo pacman -Sy --noconfirm --needed zsh fzf git git-delta curl neovim python3 cowsay sl ;;
-    Debian)    sudo apt-get update && sudo apt-get install -y zsh fzf git git-delta curl neovim python3 cowsay sl ;;
-    RedHat)    sudo dnf install -y zsh fzf git git-delta curl neovim python3 cowsay sl ;;
-    Darwin)    brew install zsh fzf git git-delta curl neovim python3 cowsay sl ;;
+    Archlinux) sudo pacman -Sy --noconfirm --needed zsh fzf git git-delta curl neovim python3 rust cowsay sl ;;
+    Debian)    sudo apt-get update && sudo apt-get install -y zsh fzf git git-delta curl neovim python3 rustc cargo cowsay sl ;;
+    RedHat)    sudo dnf install -y zsh fzf git git-delta curl neovim python3 rust cargo cowsay sl ;;
+    Darwin)    brew install zsh fzf git git-delta curl neovim python3 rust cowsay sl ;;
 esac
 
 if [[ "$family" == "RedHat" ]] && rpm -q PackageKit-command-not-found >/dev/null 2>&1; then

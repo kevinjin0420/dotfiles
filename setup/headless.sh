@@ -21,9 +21,9 @@ fi
 neovim_dir="nvim-linux-$neovim_arch"
 
 case "$(os_family)" in
-    Debian)    sudo apt-get update && sudo apt-get install -y zsh fzf git git-delta curl tar gzip python3 python3-venv tmux build-essential unzip ripgrep fd-find nodejs npm cowsay sl ;;
-    Archlinux) sudo pacman -Sy --noconfirm --needed zsh fzf git git-delta curl tar gzip python tmux base-devel unzip ripgrep fd nodejs npm cowsay sl ;;
-    RedHat)    sudo dnf install -y zsh fzf git git-delta curl tar gzip python3 tmux gcc make unzip ripgrep fd-find nodejs npm cowsay sl ;;
+    Debian)    sudo apt-get update && sudo apt-get install -y zsh fzf git git-delta curl tar gzip python3 python3-venv tmux build-essential unzip ripgrep fd-find nodejs npm rustc cargo cowsay sl ;;
+    Archlinux) sudo pacman -Sy --noconfirm --needed zsh fzf git git-delta curl tar gzip python tmux base-devel unzip ripgrep fd nodejs npm rust cowsay sl ;;
+    RedHat)    sudo dnf install -y zsh fzf git git-delta curl tar gzip python3 tmux gcc make unzip ripgrep fd-find nodejs npm rust cargo cowsay sl ;;
 esac
 
 if [[ "$(os_family)" == "RedHat" ]] && rpm -q PackageKit-command-not-found >/dev/null 2>&1; then
