@@ -6,3 +6,6 @@ ColumnLimit: 100
 AccessModifierOffset: -4
 AllowShortBlocksOnASingleLine: Empty
 AllowShortLoopsOnASingleLine: true
+BreakBeforeBraces: Custom
+BraceWrapping:
+  BeforeElse: true

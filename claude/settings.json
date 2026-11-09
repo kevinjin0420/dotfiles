@@ -1,4 +1,5 @@
 {
+  "model": "opus",
   "workflowKeywordTriggerEnabled": false,
   "enabledPlugins": {
     "ponytail@ponytail": true,
@@ -30,5 +31,5 @@
   "theme": "dark",
   "verbose": true,
   "switchModelsOnFlag": false,
-  "model": "opus"
+  "autoCompactEnabled": false
 }
