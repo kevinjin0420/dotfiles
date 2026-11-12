@@ -200,33 +200,88 @@ kwc --file kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.ima
 kwc --file breezerc --group Common --key OutlineIntensity OutlineOff
 kwc --file breezerc --group Common --key ShadowStrength 128
 
-kwc --file kglobalshortcutsrc --group kwin --key "Window Maximize" "Meta+Up,Meta+PgUp,Maximize Window"
-kwc --file kglobalshortcutsrc --group kwin --key "Window Quick Tile Left" "Meta+Left,Meta+Left,Quick Tile Window to the Left"
-kwc --file kglobalshortcutsrc --group kwin --key "Window Quick Tile Right" "Meta+Right,Meta+Right,Quick Tile Window to the Right"
+kglobalaccel_running=false
+busctl --user status org.kde.kglobalaccel >/dev/null 2>&1 && kglobalaccel_running=true
+
+qt_key_code() {
+    local key_name="$1"
+    case "$key_name" in
+        Left) echo $((0x01000012)) ;;
+        Up) echo $((0x01000013)) ;;
+        Right) echo $((0x01000014)) ;;
+        ?) printf '%d\n' "'${key_name^^}" ;;
+        *) return 1 ;;
+    esac
+}
+
+qt_shortcut_code() {
+    local shortcut="$1" modifier_bits=0 modifier key_code
+    local -a parts
+    IFS=+ read -ra parts <<<"$shortcut"
+    (( ${#parts[@]} > 0 )) || { echo "empty shortcut" >&2; return 1; }
+    for modifier in "${parts[@]:0:${#parts[@]}-1}"; do
+        case "$modifier" in
+            Shift) modifier_bits=$((modifier_bits | 0x02000000)) ;;
+            Ctrl) modifier_bits=$((modifier_bits | 0x04000000)) ;;
+            Alt) modifier_bits=$((modifier_bits | 0x08000000)) ;;
+            Meta) modifier_bits=$((modifier_bits | 0x10000000)) ;;
+            *) echo "unknown modifier '$modifier' in '$shortcut'" >&2; return 1 ;;
+        esac
+    done
+    key_code="$(qt_key_code "${parts[-1]}")" || { echo "unknown key '${parts[-1]}' in '$shortcut'" >&2; return 1; }
+    echo $((modifier_bits | key_code))
+}
+
+# A running kglobalaccel flushes its in-memory shortcuts over kglobalshortcutsrc, so file edits only stick while it is down.
+set_global_shortcut() {
+    local component="$1" action="$2" entry="$3"
+    local active_shortcut="${entry%%,*}" friendly_name="${entry##*,}"
+    if ! $kglobalaccel_running; then
+        kwc --file kglobalshortcutsrc --group "$component" --key "$action" "$entry"
+        return
+    fi
+    local -a action_id=(4 "$component" "$action" "$component" "$friendly_name")
+    local -a key_args=(0)
+    if [[ "$active_shortcut" != none ]]; then
+        local shortcut_code
+        shortcut_code="$(qt_shortcut_code "$active_shortcut")"
+        key_args=(1 4 "$shortcut_code" 0 0 0)
+    fi
+    busctl --user call org.kde.kglobalaccel /kglobalaccel org.kde.KGlobalAccel \
+        setForeignShortcutKeys 'asa(ai)' "${action_id[@]}" "${key_args[@]}"
+    local live_keys
+    live_keys="$(busctl --user call org.kde.kglobalaccel /kglobalaccel org.kde.KGlobalAccel shortcutKeys as "${action_id[@]}")"
+    [[ "$live_keys" == "a(ai) ${key_args[*]}" ]] \
+        || { echo "kglobalaccel did not apply $component/$action=$active_shortcut (live: $live_keys)" >&2; return 1; }
+}
+
+set_global_shortcut kwin "Window Maximize" "Meta+Up,Meta+PgUp,Maximize Window"
+set_global_shortcut kwin "Window Quick Tile Left" "Meta+Left,Meta+Left,Quick Tile Window to the Left"
+set_global_shortcut kwin "Window Quick Tile Right" "Meta+Right,Meta+Right,Quick Tile Window to the Right"
 for n in 1 2 3 4 5 6 7 8 9 10; do
     case $n in
         1) key="Alt+1,Ctrl+F1" ;; 2) key="Alt+2,Ctrl+F2" ;; 3) key="Alt+3,Ctrl+F3" ;; 4) key="Alt+4,Ctrl+F4" ;;
         5) key="Alt+5," ;; 6) key="Alt+6," ;; 7) key="Alt+7," ;; 8) key="Alt+8," ;; 9) key="Alt+9," ;; 10) key="Alt+0," ;;
     esac
-    kwc --file kglobalshortcutsrc --group kwin --key "Switch to Desktop $n" "$key,Switch to Desktop $n"
+    set_global_shortcut kwin "Switch to Desktop $n" "$key,Switch to Desktop $n"
 done
 declare -A win_desktop_keys=(
     [1]="Alt+!" [2]="Alt+@" [3]="Alt+#" [4]="Alt+\$" [5]="Alt+%"
     [6]="Alt+^" [7]="Alt+&" [8]="Alt+*" [9]="Alt+(" [10]="Alt+)"
 )
 for n in 1 2 3 4 5 6 7 8 9 10; do
-    kwc --file kglobalshortcutsrc --group kwin --key "Window to Desktop $n" "${win_desktop_keys[$n]},,Window to Desktop $n"
+    set_global_shortcut kwin "Window to Desktop $n" "${win_desktop_keys[$n]},,Window to Desktop $n"
 done
-kwc --file kglobalshortcutsrc --group kwin --key "view_zoom_in" 'none,Meta++\tMeta+=,Zoom In'
-kwc --file kglobalshortcutsrc --group kwin --key "view_zoom_out" "none,Meta+-,Zoom Out"
-kwc --file kglobalshortcutsrc --group kwin --key "view_actual_size" "none,Meta+0,Zoom to Actual Size"
-kwc --file kglobalshortcutsrc --group kwin --key "Overview" "none,none,Toggle Overview"
+set_global_shortcut kwin "view_zoom_in" 'none,Meta++\tMeta+=,Zoom In'
+set_global_shortcut kwin "view_zoom_out" "none,Meta+-,Zoom Out"
+set_global_shortcut kwin "view_actual_size" "none,Meta+0,Zoom to Actual Size"
+set_global_shortcut kwin "Overview" "none,none,Toggle Overview"
 
-kwc --file kglobalshortcutsrc --group org_kde_powerdevil --key powerProfile "none,none,Switch Power Profile"
-kwc --file kglobalshortcutsrc --group krunner --key _launch "none,Alt+F2,Search"
+set_global_shortcut org_kde_powerdevil powerProfile "none,none,Switch Power Profile"
+set_global_shortcut krunner _launch "none,Alt+F2,Search"
 
 for n in 1 2 3 4 5 6 7 8 9 10; do
-    kwc --file kglobalshortcutsrc --group plasmashell --key "activate task manager entry $n" "none,none,Activate Task Manager Entry $n"
+    set_global_shortcut plasmashell "activate task manager entry $n" "none,none,Activate Task Manager Entry $n"
 done
 for n in 1 2 3 4 5 6 7 8 9 10; do
     kwriteconfig6 --file kglobalshortcutsrc --group plasmashell --key "Activate Task Manager Entry $n" --delete
@@ -254,29 +309,3 @@ fi
 
 systemctl --user start plasma-plasmashell.service
 systemctl --user restart plasma-powerdevil.service
-# on wayland kwin hosts the shortcuts server, so the standalone unit just loses the bus name and dies.
-# reconfigure/restarting that unit never reloads kwin's own global shortcuts (Switch to Desktop,
-# Window Maximize, etc) either -- kwin only reads kglobalshortcutsrc for those at process start.
-# worse: a running kwin flushes its live (pre-edit) shortcut state back to that same file on exit,
-# clobbering what we just wrote before the next kwin process ever reads it -- so even logging out
-# and back in, or rebooting, will NOT make these shortcuts take effect. setForeignShortcut/setShortcut
-# over dbus are no-ops against kwin's own component too (verified), and kwin_wayland --replace crashes
-# the session. The only channel that updates both kwin's live state and this file together is System
-# Settings' Shortcuts KCM -- bind these there by hand once per machine.
-if systemctl --user is-active --quiet plasma-kglobalaccel.service; then
-    systemctl --user restart plasma-kglobalaccel.service
-else
-    cat >&2 <<'EOF'
-
-################################################################################
-# kwin-owned global shortcuts (Switch to Desktop, Window Maximize, Overview,
-# etc) were written to kglobalshortcutsrc but WILL NOT take effect -- not now,
-# not after logout, not after reboot. kwin only loads them at process start,
-# and flushes its own still-stale in-memory copy back over this file on exit,
-# clobbering what was just written before any future kwin ever reads it.
-# Set these by hand in System Settings > Shortcuts instead; that's the only
-# thing that updates kwin's live state and this file consistently.
-################################################################################
-
-EOF
-fi
