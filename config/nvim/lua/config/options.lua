@@ -4,6 +4,9 @@
 
 vim.opt.conceallevel = 0
 
+-- CubeMX's "ex: printf(...)" boilerplate near EOF gets parsed as a modeline (E518)
+vim.opt.modeline = false
+
 -- stock ftplugin/arduino.vim forces 2-space indent unless this is 0
 vim.g.arduino_recommended_style = 0
 
