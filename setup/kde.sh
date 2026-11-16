@@ -133,6 +133,19 @@ kwc --file kwinrc --group Effect-showdesktop --key BorderActivate 9
 kwc --file kdeglobals --group KDE --key LookAndFeelPackage org.kde.breezedark.desktop
 kwc --file kdeglobals --group General --key TerminalApplication "$kitty_bin"
 
+ui_font_family="JetBrains Mono NL"
+fc-list "$ui_font_family" | grep -q . || { echo "$ui_font_family not installed -- run setup/local.sh first" >&2; exit 1; }
+qt_font() { echo "$ui_font_family,$1,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,,0,0"; }
+kwc --file kdeglobals --group General --key font "$(qt_font 10)"
+kwc --file kdeglobals --group General --key fixed "$(qt_font 10)"
+kwc --file kdeglobals --group General --key menuFont "$(qt_font 10)"
+kwc --file kdeglobals --group General --key toolBarFont "$(qt_font 9)"
+kwc --file kdeglobals --group General --key smallestReadableFont "$(qt_font 8)"
+kwc --file kdeglobals --group WM --key activeFont "$(qt_font 10)"
+kwc --file kdeglobals --group General --key XftAntialias true
+kwc --file kdeglobals --group General --key XftHintStyle hintslight
+kwc --file kdeglobals --group General --key XftSubPixel none
+
 kwc --file klassy/klassyrc --group ButtonColors --key ButtonBackgroundOpacityActive 100
 kwc --file klassy/klassyrc --group ButtonColors --key ButtonBackgroundOpacityInactive 100
 kwc --file klassy/klassyrc --group ButtonColors --key CloseButtonIconColorActive AsSelected
