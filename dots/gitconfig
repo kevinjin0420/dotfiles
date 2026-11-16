@@ -31,7 +31,7 @@
 
 [diff]
 	colorMoved = default
-	tool = vimdiff
+	tool = nvimdiff 
 
 [merge]
 	conflictstyle = diff3
@@ -50,3 +50,4 @@
 	rebase = false
 [difftool]
 	prompt = false
+	trustExitCode = true
