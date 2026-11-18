@@ -47,6 +47,7 @@ declare -A dotfile_links=(
     ["dots/bash_profile"]=".bash_profile"
     ["dots/bash_profile"]=".bashrc"
     ["dots/clang-format"]=".clang-format"
+    ["config/neocmakelsp/config.toml"]=".config/neocmakelsp/config.toml"
     ["config/tmux/tmux.conf"]=".config/tmux/tmux.conf"
     ["config/nvim"]=".config/nvim"
 )

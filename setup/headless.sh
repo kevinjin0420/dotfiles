@@ -62,6 +62,7 @@ declare -A dotfile_links=(
     ["dots/gitconfig"]=".gitconfig"
     ["dots/always_forget.md"]="always-forget.md"
     ["dots/clang-format"]=".clang-format"
+    ["config/neocmakelsp/config.toml"]=".config/neocmakelsp/config.toml"
     ["config/tmux/tmux.conf"]=".config/tmux/tmux.conf"
     ["config/nvim"]=".config/nvim"
 )
