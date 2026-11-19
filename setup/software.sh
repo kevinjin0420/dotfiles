@@ -89,7 +89,7 @@ gpgkey=https://cli.github.com/packages/githubcli-archive-keyring.asc
 EOF
     pkgs=(gh sl fastfetch btop gti cowsay wl-clipboard awscli2)
     want chrome && pkgs+=(google-chrome-stable)
-    want texlive && pkgs+=(texlive-scheme-full)
+    want texlive && pkgs+=(texlive-scheme-medium latexmk)
     want zathura && pkgs+=(zathura zathura-pdf-poppler)
     sudo dnf install -y "${pkgs[@]}"
     if want discord && ! rpm -q discord >/dev/null 2>&1; then
