@@ -90,7 +90,7 @@ tries to make claude more usable
 
 class setup, opt-in. Symlinks `eecs482/version482.vim` (course staff editor
 plugin that auto-snapshots work to `*.version482` repos) into `~/.vim/plugin/`
-and `~/.local/share/nvim/site/plugin/`. See `eecs482/README.md`.
+and `~/.local/share/nvim/site/plugin/`, and installs `boost-devel` on Fedora. See `eecs482/README.md`.
 
 ### `envycontrol.sh`
 

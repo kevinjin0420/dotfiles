@@ -11,3 +11,7 @@ version482_src="$dotfiles_dir/eecs482/version482.vim"
 ensure_dir "$user_home/.vim/plugin" "$user_home/.local/share/nvim/site/plugin"
 symlink "$version482_src" "$user_home/.vim/plugin/version482.vim"
 symlink "$version482_src" "$user_home/.local/share/nvim/site/plugin/version482.vim"
+
+case "$(os_family)" in
+    RedHat) rpm -q boost-devel >/dev/null 2>&1 || sudo dnf install -y boost-devel ;;
+esac
