@@ -51,6 +51,9 @@ return {
             table.insert(markdown_formatters, "injected")
             opts.formatters_by_ft.markdown = markdown_formatters
             opts.formatters = opts.formatters or {}
+            opts.formatters["markdownlint-cli2"] = opts.formatters["markdownlint-cli2"] or {}
+            opts.formatters["markdownlint-cli2"].prepend_args =
+                { "--config", vim.fn.stdpath("config") .. "/.markdownlint-cli2.yaml" }
             opts.formatters.injected = {
                 options = { lang_to_formatters = { c = { "clang-format" }, cpp = { "clang-format" } } },
             }
